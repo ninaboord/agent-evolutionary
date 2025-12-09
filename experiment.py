@@ -84,6 +84,7 @@ class Experiment:
         reporter = Reporter(self.config.directory)
         reporter.log_header(self.config.name, self.config.model)
         reporter.log_config(self.config.to_dict())
+        reporter.log_system_prompt(self.config.system_prompt)
         reporter.log_task(self.config.task)
         
         # Clear sandbox files before experiment (any file with a write tool)
@@ -149,6 +150,7 @@ class Experiment:
         if reporter:
             reporter.log_header(self.config.name, self.config.model)
             reporter.log_config(self.config.to_dict())
+            reporter.log_system_prompt(self.config.system_prompt)
             reporter.log_task(self.config.task)
         
         # Clear sandbox files before experiment (any file with a write tool)

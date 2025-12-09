@@ -131,3 +131,43 @@ def custom_tools(tool_stubs, tool_impl):
     
     return tools
 
+def completion_signal_tool(description="Call this when you are completely done with the task."):
+    """Create a tool that the LLM can call to signal task completion.
+    
+    This tool sets a flag that the experiment runner checks to determine if the task is done.
+    Use this for experiments without eval functions where the LLM decides when to stop.
+    
+    Args:
+        description: The description shown to the LLM
+    
+    Returns:
+        A tuple of (tool_dict, completion_checker_fn)
+        - tool_dict: Add this to your tools list
+        - completion_checker_fn: Call this to check if LLM signaled completion
+    
+    Example:
+        complete_tool, is_complete = completion_signal_tool()
+        CONFIG = ExperimentConfig(
+            ...
+            tools=[...other_tools..., complete_tool],
+            is_sequential=True,
+            is_complete_fn=is_complete
+        )
+    """
+    completed = {"done": False}
+    
+    def execute(args):
+        completed["done"] = True
+        return "Task marked as complete."
+    
+    def is_complete():
+        return completed["done"]
+    
+    tool = create_tool(
+        "complete_task",
+        description,
+        execute
+    )
+    
+    return tool, is_complete
+

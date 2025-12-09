@@ -39,6 +39,11 @@ class Reporter:
             self.log(f"  - {tool['name']}: {tool['description']}")
         self.log("")
     
+    def log_system_prompt(self, system_prompt):
+        self.log("SYSTEM PROMPT:")
+        self.log(system_prompt)
+        self.log("")
+    
     def log_task(self, task):
         self.log("TASK:")
         self.log(task)
