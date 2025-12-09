@@ -4,7 +4,7 @@ def experiment_complete(name, env):
         return {
             "name": name,
             "passed": env.is_complete(),
-            "expected": "experiment complete",
+            "expected": "task complete",
             "actual": "complete" if env.is_complete() else "in progress"
         }
     return evaluate

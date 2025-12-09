@@ -3,12 +3,11 @@ import json
 import os
 
 class Agent:
-    def __init__(self, model, system_prompt, tools, sequential_tools=False):
+    def __init__(self, model, system_prompt, tools):
         self.model = model
         self.messages = [{"role": "system", "content": system_prompt}]
         self.tools = tools
         self.tool_map = {t["name"]: t for t in tools}
-        self.sequential_tools = sequential_tools
 
     def _call_api(self):
         response = requests.post(
@@ -38,6 +37,7 @@ class Agent:
         print(f"[Context too long - trimmed {trim_count} messages, {len(self.messages)} remaining]")
 
     def do(self, instruction):
+        """Execute instruction and process all tool calls in batch until agent returns text."""
         self.messages.append({"role": "user", "content": instruction})
         
         while True:
@@ -59,19 +59,17 @@ class Agent:
                 self.messages.append({"role": "assistant", "content": response_text})
                 return response_text
             
-            if self.sequential_tools:
-                # Sequential execution: process one tool call at a time
-                tool_call = tool_calls[0]
+            # Process all tool calls in the batch
+            self.messages.append({
+                "role": "assistant",
+                "content": message.get("content", ""),
+                "tool_calls": tool_calls
+            })
+            
+            for tool_call in tool_calls:
                 name = tool_call["function"]["name"]
                 args_str = tool_call["function"].get("arguments", "{}")
                 args = json.loads(args_str) if args_str else {}
-                
-                # Add assistant message with only the tool call we're executing
-                self.messages.append({
-                    "role": "assistant",
-                    "content": message.get("content", ""),
-                    "tool_calls": [tool_call]
-                })
                 
                 # Execute tool
                 tool = self.tool_map.get(name)
@@ -84,37 +82,58 @@ class Agent:
                 })
                 
                 print(f"[{name}] {result}")
-                
-                # Exit immediately if take_money was called (experiment complete)
-                if name == "take_money":
-                    return result
-                
-                # Continue loop to get next API response (model will see the tool result and decide next action)
-            else:
-                # Parallel execution: process all tool calls in the batch
-                self.messages.append({
-                    "role": "assistant",
-                    "content": message.get("content", ""),
-                    "tool_calls": tool_calls
-                })
-                
-                for tool_call in tool_calls:
-                    name = tool_call["function"]["name"]
-                    args_str = tool_call["function"].get("arguments", "{}")
-                    args = json.loads(args_str) if args_str else {}
-                    
-                    # Execute tool
-                    tool = self.tool_map.get(name)
-                    result = tool["execute"](args) if tool else f"Unknown tool: {name}"
-                    
-                    self.messages.append({
-                        "role": "tool",
-                        "tool_call_id": tool_call["id"],
-                        "content": result
-                    })
-                    
-                    print(f"[{name}] {result}")
-                    
-                    # Exit immediately if take_money was called (experiment complete)
-                    if name == "take_money":
-                        return result
+    
+    def do_turn(self, instruction=None):
+        """Execute one turn: process exactly one tool call and return the result immediately.
+        For turn-based experiments where the agent takes one action at a time.
+        If instruction is provided, it's added as a user message first."""
+        if instruction:
+            self.messages.append({"role": "user", "content": instruction})
+        
+        while True:
+            result = self._call_api()
+            
+            # Handle context length exceeded error
+            if "error" in result:
+                error = result["error"]
+                if "context_length_exceeded" in str(error):
+                    self._trim_messages()
+                    continue  # Retry with trimmed messages
+                return f"API Error: {error}"
+            
+            message = result["choices"][0]["message"]
+            tool_calls = message.get("tool_calls")
+            
+            if not tool_calls:
+                # Agent returned text instead of a tool call - return it
+                response_text = message.get("content", "")
+                self.messages.append({"role": "assistant", "content": response_text})
+                return response_text
+            
+            # Process only the first tool call
+            tool_call = tool_calls[0]
+            name = tool_call["function"]["name"]
+            args_str = tool_call["function"].get("arguments", "{}")
+            args = json.loads(args_str) if args_str else {}
+            
+            # Add assistant message with only the tool call we're executing
+            self.messages.append({
+                "role": "assistant",
+                "content": message.get("content", ""),
+                "tool_calls": [tool_call]
+            })
+            
+            # Execute tool
+            tool = self.tool_map.get(name)
+            result = tool["execute"](args) if tool else f"Unknown tool: {name}"
+            
+            self.messages.append({
+                "role": "tool",
+                "tool_call_id": tool_call["id"],
+                "content": result
+            })
+            
+            print(f"[{name}] {result}")
+            
+            # Return immediately after processing one tool call
+            return result

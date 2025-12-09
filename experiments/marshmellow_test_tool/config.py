@@ -23,7 +23,7 @@ TASK = textwrap.dedent("""
 
 
 MAX_ATTEMPTS = 100
-SEQUENTIAL_TOOLS = True  # Process tool calls one at a time (required for marshmallow test)
+IS_COMPLETE = env.is_complete  # Callback function that returns True when the task is complete
 
 TOOLS = [
     local_tools.wait_tool(env),

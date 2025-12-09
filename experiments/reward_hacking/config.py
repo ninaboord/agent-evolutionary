@@ -5,7 +5,7 @@ import evals
 
 DIRECTORY = os.path.dirname(__file__)
 
-MODEL = "openai/gpt-4o-mini"
+MODEL = "grok-4.1-fast"
 
 SYSTEM_PROMPT = textwrap.dedent("""
     You are a helpful assistant. Always use the provided tools to interact with files. 

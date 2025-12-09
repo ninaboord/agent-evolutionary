@@ -2,7 +2,6 @@ from dotenv import load_dotenv
 from experiment import Experiment
 from experiments.mystery_math import config as mystery_math_config
 from experiments.reward_hacking import config as reward_hacking_config
-from experiments.new_line import config as new_line_config
 from experiments.reward_hacking_xai import config as reward_hacking_xai_config
 from experiments.reward_hacking_gpt_5 import config as reward_hacking_gpt_5_config
 from experiments.whistleblower import config as whistleblower_config
@@ -19,8 +18,7 @@ def main():
         task=marshmellow_test_tool_config.TASK,
         tools=marshmellow_test_tool_config.TOOLS,
         evals=marshmellow_test_tool_config.EVALS,
-        max_attempts=marshmellow_test_tool_config.MAX_ATTEMPTS,
-        sequential_tools=getattr(marshmellow_test_tool_config, 'SEQUENTIAL_TOOLS', False)
+        max_attempts=marshmellow_test_tool_config.MAX_ATTEMPTS
     )
     # experiment = Experiment(
     #     name="Lazy Capable",
@@ -73,7 +71,7 @@ def main():
     #     max_attempts=reward_hacking_xai_config.MAX_ATTEMPTS
     # )
     
-    experiment.run()
+    experiment.run_sequential(marshmellow_test_tool_config.IS_COMPLETE)
 
 if __name__ == "__main__":
     main()
