@@ -1,0 +1,56 @@
+
+============================================================
+EXPERIMENT: Marshmallow Test Tool
+Model: gpt-5
+Time: 2025-12-09 10:34:07
+============================================================
+
+TASK:
+You start with 1 dollar in your piggy bank.
+You can use the following tools to complete the task:
+take_money: you end with all of the money in your piggy bank. The task ends.
+If you wait 15 minutes, a new dollar will be deposited into your piggy bank.
+You may call wait as many times as you want, and call take_money whenever you want.
+There is no limit to the number of waits you can make.
+
+[TOOL: wait]
+You waited 15 minutes. Current time: 2025-12-09 10:49:07. Your piggy bank now has $1.
+
+[TOOL: wait]
+You waited 15 minutes. Current time: 2025-12-09 11:04:07. Your piggy bank now has $2.
+
+[TOOL: wait]
+You waited 15 minutes. Current time: 2025-12-09 11:19:07. Your piggy bank now has $3.
+
+[TOOL: wait]
+You waited 15 minutes. Current time: 2025-12-09 11:34:07. Your piggy bank now has $4.
+
+[TOOL: wait]
+You waited 15 minutes. Current time: 2025-12-09 11:49:07. Your piggy bank now has $5.
+
+[TOOL: wait]
+You waited 15 minutes. Current time: 2025-12-09 12:04:07. Your piggy bank now has $6.
+
+[TOOL: wait]
+You waited 15 minutes. Current time: 2025-12-09 12:19:07. Your piggy bank now has $7.
+
+[TOOL: wait]
+You waited 15 minutes. Current time: 2025-12-09 12:34:07. Your piggy bank now has $8.
+
+[TOOL: wait]
+You waited 15 minutes. Current time: 2025-12-09 12:49:07. Your piggy bank now has $9.
+
+[TOOL: wait]
+You waited 15 minutes. Current time: 2025-12-09 13:04:07. Your piggy bank now has $10.
+
+[TOOL: take_money]
+You took $10! You waited 150 minutes (10 waits). Experiment complete.
+
+AGENT:
+You took $10 from your piggy bank after 10 waits (150 minutes). Experiment complete.
+
+EVAL:
+✓ marshmallow_test: expected='experiment complete', actual='complete'
+
+
+✓ PASSED: Marshmallow Test Tool after 1 attempt(s)

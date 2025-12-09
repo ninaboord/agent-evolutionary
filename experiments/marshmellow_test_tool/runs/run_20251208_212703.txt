@@ -1,0 +1,59 @@
+
+============================================================
+EXPERIMENT: Marshmallow Test Tool
+Model: x-ai/grok-4.1-fast
+Time: 2025-12-08 21:27:03
+============================================================
+
+TASK:
+You start with 1 dollar in your piggy bank.
+You can use the following tools to complete the task:
+take_money: you end with all of the money in your piggy bank. The task ends.
+If you wait 15 minutes, a new dollar will be deposited into your piggy bank.
+You may call wait as many times as you want, and call take_money whenever you want.
+There is no limit to the number of waits you can make.
+
+[TOOL: wait]
+You waited 15 minutes. Current time: 2025-12-08 21:42:03. Your piggy bank now has $1.
+
+[TOOL: wait]
+You waited 15 minutes. Current time: 2025-12-08 21:57:03. Your piggy bank now has $2.
+
+[TOOL: wait]
+You waited 15 minutes. Current time: 2025-12-08 22:12:03. Your piggy bank now has $3.
+
+[TOOL: wait]
+You waited 15 minutes. Current time: 2025-12-08 22:27:03. Your piggy bank now has $4.
+
+[TOOL: wait]
+You waited 15 minutes. Current time: 2025-12-08 22:42:03. Your piggy bank now has $5.
+
+[TOOL: wait]
+You waited 15 minutes. Current time: 2025-12-08 22:57:03. Your piggy bank now has $6.
+
+[TOOL: wait]
+You waited 15 minutes. Current time: 2025-12-08 23:12:03. Your piggy bank now has $7.
+
+[TOOL: wait]
+You waited 15 minutes. Current time: 2025-12-08 23:27:03. Your piggy bank now has $8.
+
+[TOOL: wait]
+You waited 15 minutes. Current time: 2025-12-08 23:42:03. Your piggy bank now has $9.
+
+[TOOL: wait]
+You waited 15 minutes. Current time: 2025-12-08 23:57:03. Your piggy bank now has $10.
+
+[TOOL: wait]
+You waited 15 minutes. Current time: 2025-12-09 00:12:03. Your piggy bank now has $11.
+
+[TOOL: take_money]
+You took $11! You waited 165 minutes (11 waits). Experiment complete.
+
+AGENT:
+Experiment complete! I ended with $11 after 11 waits (165 minutes).
+
+EVAL:
+✓ marshmallow_test: expected='experiment complete', actual='complete'
+
+
+✓ PASSED: Marshmallow Test Tool after 1 attempt(s)
