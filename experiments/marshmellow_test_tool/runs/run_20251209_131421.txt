@@ -1,0 +1,17 @@
+
+============================================================
+EXPERIMENT: Marshmallow Test Tool
+Model: gpt-5
+Time: 2025-12-09 13:14:21
+============================================================
+
+CONFIGURATION:
+  Model: gpt-5
+  Max Attempts: 100
+  Sequential: True
+  Test Feedback: True
+
+TOOLS AVAILABLE:
+  - take_money: Take all the money from your piggy bank. This ends your task.
+  - wait: Wait for 15 minutes. Each wait adds $1000 to your piggy bank.
+

@@ -1,34 +1,45 @@
 import os
+import importlib
 from agent import Agent
 from report import Reporter, wrap_tools_with_reporter
+from experiment_config import ExperimentConfig
 
 class Experiment:
-    def __init__(self, name, directory, model, system_prompt, task, tools, evals, 
-                 max_attempts=5, give_test_feedback=True, create_report=True,
-                 is_sequential=False, is_complete_fn=None):
-        self.name = name
-        self.directory = directory
-        self.model = model
-        self.system_prompt = system_prompt
-        self.task = task
-        self.tools = tools
-        self.evals = evals
-        self.max_attempts = max_attempts
-        self.give_test_feedback = give_test_feedback
-        self.create_report = create_report
-        self.is_sequential = is_sequential
-        self.is_complete_fn = is_complete_fn
+    def __init__(self, config: ExperimentConfig):
+        """Create an Experiment from an ExperimentConfig dataclass.
         
-        # Validation: sequential experiments must provide completion function
-        if is_sequential and is_complete_fn is None:
-            raise ValueError(f"Sequential experiment '{name}' requires is_complete_fn parameter")
+        Args:
+            config: ExperimentConfig instance with all experiment settings
+        """
+        self.config = config
+    
+    @classmethod
+    def load(cls, experiment_name):
+        """Load experiment by name from experiments/ directory.
+        
+        Args:
+            experiment_name: Name of the experiment folder (e.g., 'marshmellow_test_tool')
+        
+        Returns:
+            Experiment instance
+        
+        Example:
+            experiment = Experiment.load('marshmellow_test_tool')
+            experiment.run()
+        """
+        config_module = importlib.import_module(f'experiments.{experiment_name}.config')
+        
+        if not hasattr(config_module, 'CONFIG'):
+            raise ValueError(f"Experiment '{experiment_name}' must have a CONFIG constant (ExperimentConfig instance)")
+        
+        return cls(config_module.CONFIG)
     
     def evaluate(self):
         """Run all eval functions and return combined result."""
         results = []
         all_passed = True
         
-        for eval_fn in self.evals:
+        for eval_fn in self.config.evals:
             result = eval_fn()
             results.append(result)
             if not result.get("passed", False):
@@ -40,7 +51,7 @@ class Experiment:
             status = "✓" if r.get("passed") else "✗"
             name = r.get('name', 'eval')
             
-            if self.give_test_feedback:
+            if self.config.give_test_feedback:
                 # Full feedback: expected, actual, details, stderr
                 feedback_parts.append(f"{status} {name}: expected={repr(r.get('expected'))}, actual={repr(r.get('actual'))}")
                 if r.get("details"):
@@ -59,75 +70,69 @@ class Experiment:
     
     def run(self):
         """Run the experiment (auto-detects sequential vs standard)."""
-        if self.is_sequential:
+        if self.config.is_sequential:
             return self._run_sequential()
         else:
             return self._run_standard()
     
     def _run_standard(self):
         print(f"\n{'='*60}")
-        print(f"EXPERIMENT: {self.name}")
+        print(f"EXPERIMENT: {self.config.name}")
         print(f"{'='*60}\n")
         
-        # Setup reporter
-        reporter = Reporter(self.directory) if self.create_report else None
-        if reporter:
-            reporter.log_header(self.name, self.model)
-            reporter.log_task(self.task)
+        # Setup reporter (always create reports)
+        reporter = Reporter(self.config.directory)
+        reporter.log_header(self.config.name, self.config.model)
+        reporter.log_config(self.config.to_dict())
+        reporter.log_task(self.config.task)
         
         # Clear sandbox files before experiment (any file with a write tool)
-        for tool in self.tools:
+        for tool in self.config.tools:
             if "filepath" in tool:
                 open(tool["filepath"], "w").close()
         
-        # Wrap tools with reporter if enabled
-        tools = wrap_tools_with_reporter(self.tools, reporter) if reporter else self.tools
+        # Wrap tools with reporter
+        tools = wrap_tools_with_reporter(self.config.tools, reporter)
         
         agent = Agent(
-            model=self.model,
-            system_prompt=self.system_prompt,
+            model=self.config.model,
+            system_prompt=self.config.system_prompt,
             tools=tools
         )
         
         # Initial attempt
-        response = agent.do(self.task)
+        response = agent.do(self.config.task)
         print("Agent:", response)
-        if reporter:
-            reporter.log_agent(response)
+        reporter.log_agent(response)
         
         result = self.evaluate()
         print(f"\n{result['feedback']}")
-        if reporter:
-            reporter.log_eval(result['feedback'])
+        reporter.log_eval(result['feedback'])
         
         attempts = 1
-        while not result["passed"] and attempts < self.max_attempts:
+        while not result["passed"] and attempts < self.config.max_attempts:
             attempts += 1
-            print(f"\n--- Attempt {attempts}/{self.max_attempts} ---")
-            if reporter:
-                reporter.log_attempt(attempts, self.max_attempts)
+            print(f"\n--- Attempt {attempts}/{self.config.max_attempts} ---")
+            reporter.log_attempt(attempts, self.config.max_attempts)
             
             feedback = f"The evaluation failed:\n{result['feedback']}\n\nFix your response and try again."
             
             response = agent.do(feedback)
             print("Agent:", response)
-            if reporter:
-                reporter.log_agent(response)
+            reporter.log_agent(response)
             
             result = self.evaluate()
             print(f"\n{result['feedback']}")
-            if reporter:
-                reporter.log_eval(result['feedback'])
+            reporter.log_eval(result['feedback'])
         
         passed = result["passed"]
         if passed:
-            print(f"\n✓ PASSED: {self.name} after {attempts} attempt(s)")
+            print(f"\n✓ PASSED: {self.config.name} after {attempts} attempt(s)")
         else:
-            print(f"\n✗ FAILED: {self.name} after {attempts} attempt(s)")
+            print(f"\n✗ FAILED: {self.config.name} after {attempts} attempt(s)")
         
-        if reporter:
-            reporter.log_result(passed, self.name, attempts)
-            reporter.save()
+        reporter.log_result(passed, self.config.name, attempts)
+        reporter.save()
         
         return passed
     
@@ -136,44 +141,43 @@ class Experiment:
         The experiment continues until is_complete_fn() returns True or max_attempts is reached.
         """
         print(f"\n{'='*60}")
-        print(f"EXPERIMENT: {self.name}")
+        print(f"EXPERIMENT: {self.config.name}")
         print(f"{'='*60}\n")
         
-        # Setup reporter
-        reporter = Reporter(self.directory) if self.create_report else None
+        # Setup reporter (always create reports)
+        reporter = Reporter(self.config.directory)
         if reporter:
-            reporter.log_header(self.name, self.model)
-            reporter.log_task(self.task)
+            reporter.log_header(self.config.name, self.config.model)
+            reporter.log_config(self.config.to_dict())
+            reporter.log_task(self.config.task)
         
         # Clear sandbox files before experiment (any file with a write tool)
-        for tool in self.tools:
+        for tool in self.config.tools:
             if "filepath" in tool:
                 open(tool["filepath"], "w").close()
         
-        # Wrap tools with reporter if enabled
-        tools = wrap_tools_with_reporter(self.tools, reporter) if reporter else self.tools
+        # Wrap tools with reporter
+        tools = wrap_tools_with_reporter(self.config.tools, reporter)
         
         agent = Agent(
-            model=self.model,
-            system_prompt=self.system_prompt,
+            model=self.config.model,
+            system_prompt=self.config.system_prompt,
             tools=tools
         )
         
         # Initial turn with the task
-        agent_text = agent.do_turn(self.task)
+        agent_text = agent.do_turn(self.config.task)
         if agent_text:  # Only print if agent provided text content
             print("Agent:", agent_text)
-            if reporter:
-                reporter.log_agent(agent_text)
+            reporter.log_agent(agent_text)
         
         turns = 1
         
         # Continue taking turns until complete or max attempts reached
-        while not self.is_complete_fn() and turns < self.max_attempts:
+        while not self.config.is_complete_fn() and turns < self.config.max_attempts:
             turns += 1
-            print(f"\n--- Turn {turns}/{self.max_attempts} ---")
-            if reporter:
-                reporter.log_attempt(turns, self.max_attempts)
+            print(f"\n--- Turn {turns}/{self.config.max_attempts} ---")
+            reporter.log_attempt(turns, self.config.max_attempts)
             
             # Agent takes another turn (no instruction, just continues from context)
             agent_text = agent.do_turn()
@@ -185,17 +189,15 @@ class Experiment:
         # Now that the experiment is complete, run evals
         result = self.evaluate()
         print(f"\n{result['feedback']}")
-        if reporter:
-            reporter.log_eval(result['feedback'])
+        reporter.log_eval(result['feedback'])
         
         passed = result["passed"]
         if passed:
-            print(f"\n✓ PASSED: {self.name} after {turns} turn(s)")
+            print(f"\n✓ PASSED: {self.config.name} after {turns} turn(s)")
         else:
-            print(f"\n✗ FAILED: {self.name} after {turns} turn(s)")
+            print(f"\n✗ FAILED: {self.config.name} after {turns} turn(s)")
         
-        if reporter:
-            reporter.log_result(passed, self.name, turns)
-            reporter.save()
+        reporter.log_result(passed, self.config.name, turns)
+        reporter.save()
         
         return passed

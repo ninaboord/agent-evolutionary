@@ -1,4 +1,5 @@
 import os
+import json
 from datetime import datetime
 
 class Reporter:
@@ -24,6 +25,19 @@ class Reporter:
         self.log(f"Model: {model}")
         self.log(f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         self.log(f"{'='*60}\n")
+    
+    def log_config(self, config_dict):
+        """Log experiment configuration details."""
+        self.log("CONFIGURATION:")
+        self.log(f"  Model: {config_dict['model']}")
+        self.log(f"  Max Attempts: {config_dict['max_attempts']}")
+        self.log(f"  Sequential: {config_dict['is_sequential']}")
+        self.log(f"  Test Feedback: {config_dict['give_test_feedback']}")
+        self.log("")
+        self.log("TOOLS AVAILABLE:")
+        for tool in config_dict['tools']:
+            self.log(f"  - {tool['name']}: {tool['description']}")
+        self.log("")
     
     def log_task(self, task):
         self.log("TASK:")
