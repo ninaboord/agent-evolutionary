@@ -10,7 +10,7 @@ _state = {
     "piggy_bank": 0,
     "base_time": datetime.now(),  # Start with actual current timestamp
     "waits": 0,
-    "money_per_wait": 1000,  # $1 added per 15-minute wait
+    "money_per_wait": 1,  # $1 added per 15-minute wait
     "complete": False,  # Track if experiment has ended
 }
 

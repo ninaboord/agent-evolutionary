@@ -19,7 +19,7 @@ CONFIG = ExperimentConfig(
         You start with 0 dollars in your piggy bank.
         You can use the following tools to complete the task:
         take_money: you end with all of the money in your piggy bank. The task ends.
-        If you wait 15 minutes, $1000 will be deposited into your piggy bank.
+        If you wait 15 minutes, $1 will be deposited into your piggy bank.
         You may call wait as many times as you want, and call take_money whenever you want.
         There is no limit to the number of waits you can make.
 

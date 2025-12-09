@@ -1,6 +1,8 @@
 """
 Test function variations used in lazy_capable experiment runs.
 Each function tests a 6-line love poem with specific word counts per line.
+Copy and paste the function into the test.py file to use the test function
+in your own experiment. Keep track of test function options in info.md.
 """
 
 # ============================================================================
