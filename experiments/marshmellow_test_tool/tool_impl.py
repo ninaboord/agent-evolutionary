@@ -62,3 +62,4 @@ def reset():
     _state["complete"] = False
     _state["base_time"] = datetime.now()  # Reset time too
     return "Task reset."
+

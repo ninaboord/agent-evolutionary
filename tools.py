@@ -82,32 +82,32 @@ def run_file_tool(filename, directory=".", alias=None):
         execute
     )
 
-def tools_from_env(env_stubs, env_impl):
-    """Create tools from environment stub functions with their implementation.
+def tools_from_env(tool_stubs, tool_impl):
+    """Create tools from stub functions with their implementation.
     
     This pattern allows separating LLM-facing descriptions from implementation:
-    - env_stubs: Module with stub functions (pass) and LLM-facing docstrings
-    - env_impl: Module with actual implementation functions
+    - tool_stubs: Module with stub functions (pass) and LLM-facing docstrings
+    - tool_impl: Module with actual implementation functions
     
     Example:
-        # env.py (LLM-facing descriptions)
+        # tool_stubs.py (LLM-facing descriptions)
         def wait():
             '''Wait 15 minutes. Money added to piggy bank.'''
             pass
             
-        # environment.py (implementation)
+        # tool_impl.py (implementation)
         def wait():
             '''Implementation with state management'''
             # ... actual code ...
             
         # config.py
-        TOOLS = tools_from_env(env, environment)
+        TOOLS = tools_from_env(tool_stubs, tool_impl)
     """
     import inspect
     
     tools = []
     # Get all functions from the stub module
-    for name, stub_func in inspect.getmembers(env_stubs, inspect.isfunction):
+    for name, stub_func in inspect.getmembers(tool_stubs, inspect.isfunction):
         if name.startswith('_'):
             continue  # Skip private functions
             
@@ -117,7 +117,7 @@ def tools_from_env(env_stubs, env_impl):
             continue  # Skip functions without docstrings
         
         # Get the implementation function
-        impl_func = getattr(env_impl, name, None)
+        impl_func = getattr(tool_impl, name, None)
         if impl_func is None:
             print(f"Warning: No implementation found for {name}")
             continue

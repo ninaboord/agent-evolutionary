@@ -5,3 +5,4 @@ def wait():
 def take_money():
     """Take all the money from your piggy bank. This ends your task."""
     pass
+

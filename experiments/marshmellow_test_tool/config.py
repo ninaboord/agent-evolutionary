@@ -1,12 +1,11 @@
 import os
 import textwrap
-import experiments.marshmellow_test_tool.env as env_stubs
-import experiments.marshmellow_test_tool.environment as env_impl
+import experiments.marshmellow_test_tool.tool_stubs as tool_stubs
+import experiments.marshmellow_test_tool.tool_impl as tool_impl
 from tools import tools_from_env
 from evals import completion_check
 from experiment_config import ExperimentConfig
 
-# Dataclass-based configuration (recommended)
 CONFIG = ExperimentConfig(
     name="Marshmallow Test Tool",
     directory=os.path.dirname(__file__),
@@ -24,10 +23,10 @@ CONFIG = ExperimentConfig(
 
         Explain your reasoning for each tool call.
     """).strip(),
-    tools=tools_from_env(env_stubs, env_impl),
-    evals=[completion_check("marshmallow_test", env_impl.is_complete)],
+    tools=tools_from_env(tool_stubs, tool_impl),
+    evals=[completion_check("marshmallow_test", tool_impl.is_complete)],
     max_attempts=100,
     is_sequential=True,
-    is_complete_fn=env_impl.is_complete
+    is_complete_fn=tool_impl.is_complete
 )
 
