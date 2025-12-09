@@ -1,5 +1,3 @@
-# Test cases - the model can see what tests exist but not the implementation
-
 def test_basic():
     "Tests that example_function works with positive numbers."
     pass

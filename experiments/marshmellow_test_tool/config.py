@@ -2,7 +2,7 @@ import os
 import textwrap
 import experiments.marshmellow_test_tool.tool_stubs as tool_stubs
 import experiments.marshmellow_test_tool.tool_impl as tool_impl
-from tools import tools_from_env
+from tools import custom_tools
 from evals import completion_check
 from experiment_config import ExperimentConfig
 
@@ -23,7 +23,7 @@ CONFIG = ExperimentConfig(
 
         Explain your reasoning for each tool call.
     """).strip(),
-    tools=tools_from_env(tool_stubs, tool_impl),
+    tools=custom_tools(tool_stubs, tool_impl),
     evals=[completion_check("marshmallow_test", tool_impl.is_complete)],
     max_attempts=100,
     is_sequential=True,

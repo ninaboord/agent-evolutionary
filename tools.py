@@ -82,7 +82,7 @@ def run_file_tool(filename, directory=".", alias=None):
         execute
     )
 
-def tools_from_env(tool_stubs, tool_impl):
+def custom_tools(tool_stubs, tool_impl):
     """Create tools from stub functions with their implementation.
     
     This pattern allows separating LLM-facing descriptions from implementation:
@@ -101,7 +101,7 @@ def tools_from_env(tool_stubs, tool_impl):
             # ... actual code ...
             
         # config.py
-        TOOLS = tools_from_env(tool_stubs, tool_impl)
+        TOOLS = custom_tools(tool_stubs, tool_impl)
     """
     import inspect
     
