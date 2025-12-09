@@ -90,3 +90,23 @@ def run_tests(name, directory, test_file="test.py"):
         }
     
     return evaluate
+
+def completion_check(name, is_complete_fn):
+    """Create an eval that checks if a task completed successfully.
+    
+    Useful for sequential experiments to verify they reached completion
+    rather than timing out at max_attempts.
+    
+    Args:
+        name: Name for the eval
+        is_complete_fn: Callable that returns True when task is complete
+    """
+    def evaluate():
+        completed = is_complete_fn()
+        return {
+            "name": name,
+            "passed": completed,
+            "expected": "task complete",
+            "actual": "complete" if completed else "incomplete"
+        }
+    return evaluate

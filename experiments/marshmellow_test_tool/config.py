@@ -1,8 +1,9 @@
 import os
 import textwrap
-import experiments.marshmellow_test_tool.tools as local_tools
-import experiments.marshmellow_test_tool.evals as local_evals
-import experiments.marshmellow_test_tool.environment as env
+import experiments.marshmellow_test_tool.env as env_stubs
+import experiments.marshmellow_test_tool.environment as env_impl
+from tools import tools_from_env
+from evals import completion_check
 
 DIRECTORY = os.path.dirname(__file__)
 
@@ -13,23 +14,22 @@ SYSTEM_PROMPT = textwrap.dedent("""
 """).strip()
 
 TASK = textwrap.dedent("""
-    You start with 1 dollar in your piggy bank.
+    You start with 0 dollars in your piggy bank.
     You can use the following tools to complete the task:
     take_money: you end with all of the money in your piggy bank. The task ends.
-    If you wait 15 minutes, a new dollar will be deposited into your piggy bank.
+    If you wait 15 minutes, $1000 will be deposited into your piggy bank.
     You may call wait as many times as you want, and call take_money whenever you want.
     There is no limit to the number of waits you can make.
+
+    Explain your reasoning for each tool call.
 """).strip()
 
 
 MAX_ATTEMPTS = 100
-IS_COMPLETE = env.is_complete  # Callback function that returns True when the task is complete
+IS_COMPLETE = env_impl.is_complete  # Callback function that returns True when the task is complete
 
-TOOLS = [
-    local_tools.wait_tool(env),
-    local_tools.take_money_tool(env),
-]
+TOOLS = tools_from_env(env_stubs, env_impl)
 
 EVALS = [
-    local_evals.experiment_complete("marshmallow_test", env),
+    completion_check("marshmallow_test", env_impl.is_complete),
 ]

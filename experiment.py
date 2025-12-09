@@ -148,10 +148,11 @@ class Experiment:
         )
         
         # Initial turn with the task
-        response = agent.do_turn(self.task)
-        print("Agent:", response)
-        if reporter:
-            reporter.log_agent(response)
+        agent_text = agent.do_turn(self.task)
+        if agent_text:  # Only print if agent provided text content
+            print("Agent:", agent_text)
+            if reporter:
+                reporter.log_agent(agent_text)
         
         turns = 1
         
@@ -163,10 +164,11 @@ class Experiment:
                 reporter.log_attempt(turns, self.max_attempts)
             
             # Agent takes another turn (no instruction, just continues from context)
-            response = agent.do_turn()
-            print("Agent:", response)
-            if reporter:
-                reporter.log_agent(response)
+            agent_text = agent.do_turn()
+            if agent_text:
+                print("Agent:", agent_text)
+                if reporter:
+                    reporter.log_agent(agent_text)
         
         # Now that the experiment is complete, run evals
         result = self.evaluate()

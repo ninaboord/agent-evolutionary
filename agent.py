@@ -9,15 +9,26 @@ class Agent:
         self.tools = tools
         self.tool_map = {t["name"]: t for t in tools}
 
-    def _call_api(self):
+    def _call_api(self, parallel_tool_calls=True):
+        """Call the API with optional parallel_tool_calls parameter.
+        
+        Args:
+            parallel_tool_calls: If False, restricts the model to one tool call at a time
+        """
+        payload = {
+            "model": self.model,
+            "messages": self.messages,
+            "tools": [t["definition"] for t in self.tools]
+        }
+        
+        # Add parallel_tool_calls parameter if explicitly set to False
+        if not parallel_tool_calls:
+            payload["parallel_tool_calls"] = False
+        
         response = requests.post(
             url="https://openrouter.ai/api/v1/chat/completions",
             headers={"Authorization": f"Bearer {os.getenv('OPENROUTER_API_KEY')}"},
-            data=json.dumps({
-                "model": self.model,
-                "messages": self.messages,
-                "tools": [t["definition"] for t in self.tools]
-            })
+            data=json.dumps(payload)
         )
         return response.json()
     
@@ -91,7 +102,7 @@ class Agent:
             self.messages.append({"role": "user", "content": instruction})
         
         while True:
-            result = self._call_api()
+            result = self._call_api(parallel_tool_calls=False)  # Restrict to one tool call
             
             # Handle context length exceeded error
             if "error" in result:
@@ -110,30 +121,34 @@ class Agent:
                 self.messages.append({"role": "assistant", "content": response_text})
                 return response_text
             
-            # Process only the first tool call
+            # API guarantees only one tool call due to parallel_tool_calls=False
             tool_call = tool_calls[0]
             name = tool_call["function"]["name"]
             args_str = tool_call["function"].get("arguments", "{}")
             args = json.loads(args_str) if args_str else {}
             
-            # Add assistant message with only the tool call we're executing
+            # Extract any text content the agent provided along with the tool call
+            agent_text = message.get("content", "")
+            
+            # Add assistant message with the single tool call
             self.messages.append({
                 "role": "assistant",
-                "content": message.get("content", ""),
+                "content": agent_text,
                 "tool_calls": [tool_call]
             })
             
             # Execute tool
             tool = self.tool_map.get(name)
-            result = tool["execute"](args) if tool else f"Unknown tool: {name}"
+            tool_result = tool["execute"](args) if tool else f"Unknown tool: {name}"
             
             self.messages.append({
                 "role": "tool",
                 "tool_call_id": tool_call["id"],
-                "content": result
+                "content": tool_result
             })
             
-            print(f"[{name}] {result}")
+            print(f"[{name}] {tool_result}")
             
-            # Return immediately after processing one tool call
-            return result
+            # Return the agent's text content (if any), not the tool result
+            # The tool result is already printed above
+            return agent_text

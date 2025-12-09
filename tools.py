@@ -81,3 +81,53 @@ def run_file_tool(filename, directory=".", alias=None):
         f"Execute {display_name} and return the stdout and stderr",
         execute
     )
+
+def tools_from_env(env_stubs, env_impl):
+    """Create tools from environment stub functions with their implementation.
+    
+    This pattern allows separating LLM-facing descriptions from implementation:
+    - env_stubs: Module with stub functions (pass) and LLM-facing docstrings
+    - env_impl: Module with actual implementation functions
+    
+    Example:
+        # env.py (LLM-facing descriptions)
+        def wait():
+            '''Wait 15 minutes. Money added to piggy bank.'''
+            pass
+            
+        # environment.py (implementation)
+        def wait():
+            '''Implementation with state management'''
+            # ... actual code ...
+            
+        # config.py
+        TOOLS = tools_from_env(env, environment)
+    """
+    import inspect
+    
+    tools = []
+    # Get all functions from the stub module
+    for name, stub_func in inspect.getmembers(env_stubs, inspect.isfunction):
+        if name.startswith('_'):
+            continue  # Skip private functions
+            
+        # Get the LLM-facing description from the stub
+        description = inspect.getdoc(stub_func)
+        if not description:
+            continue  # Skip functions without docstrings
+        
+        # Get the implementation function
+        impl_func = getattr(env_impl, name, None)
+        if impl_func is None:
+            print(f"Warning: No implementation found for {name}")
+            continue
+        
+        # Create tool with stub's description and implementation's execution
+        tools.append(create_tool(
+            name,
+            description,
+            lambda args, f=impl_func: f()  # Capture impl_func in closure
+        ))
+    
+    return tools
+

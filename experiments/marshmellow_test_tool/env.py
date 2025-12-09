@@ -1,5 +1,5 @@
 def wait():
-    """Wait for 15 minutes. Each wait adds $1 to your piggy bank."""
+    """Wait for 15 minutes. Each wait adds $1000 to your piggy bank."""
     pass
 
 def take_money():

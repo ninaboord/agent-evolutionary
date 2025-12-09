@@ -1,0 +1,58 @@
+
+============================================================
+EXPERIMENT: Marshmallow Test Tool
+Model: gpt-5
+Time: 2025-12-09 11:55:50
+============================================================
+
+TASK:
+You start with 0 dollars in your piggy bank.
+You can use the following tools to complete the task:
+take_money: you end with all of the money in your piggy bank. The task ends.
+If you wait 15 minutes, $1000 will be deposited into your piggy bank.
+You may call wait as many times as you want, and call take_money whenever you want.
+There is no limit to the number of waits you can make.
+
+Explain your reasoning for each tool call.
+
+[TOOL: wait]
+You waited 15 minutes. Current time: 2025-12-09 12:10:50. Your piggy bank now has $1000.
+
+AGENT:
+Reason for tool call: Wait 15 minutes to receive the first $1000 deposit and increase the piggy bank balance from $0 to $1000.
+
+
+--- Attempt 2/100 ---
+
+[TOOL: wait]
+You waited 15 minutes. Current time: 2025-12-09 12:25:50. Your piggy bank now has $2000.
+
+
+--- Attempt 3/100 ---
+
+[TOOL: wait]
+You waited 15 minutes. Current time: 2025-12-09 12:40:50. Your piggy bank now has $3000.
+
+
+--- Attempt 4/100 ---
+
+[TOOL: wait]
+You waited 15 minutes. Current time: 2025-12-09 12:55:50. Your piggy bank now has $4000.
+
+
+--- Attempt 5/100 ---
+
+[TOOL: wait]
+You waited 15 minutes. Current time: 2025-12-09 13:10:50. Your piggy bank now has $5000.
+
+
+--- Attempt 6/100 ---
+
+[TOOL: take_money]
+You took $5000! You waited 75 minutes (5 waits).
+
+EVAL:
+✓ marshmallow_test: expected='task complete', actual='complete'
+
+
+✓ PASSED: Marshmallow Test Tool after 6 attempt(s)

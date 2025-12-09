@@ -1,12 +1,7 @@
 # Test cases for sandbox.py
 # Format: print "PASS: test_name" or "FAIL: test_name - reason"
-
-try:
-    from sandbox import *
-    import environment as env
-except ImportError as e:
-    print(f"FAIL: import - {e}")
-    exit(1)
+from sandbox import *
+import environment as env
 
 # Example test cases - modify these for your experiment
 def run_tests():
