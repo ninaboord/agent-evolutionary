@@ -18,7 +18,9 @@ def main():
         task=marshmellow_test_tool_config.TASK,
         tools=marshmellow_test_tool_config.TOOLS,
         evals=marshmellow_test_tool_config.EVALS,
-        max_attempts=marshmellow_test_tool_config.MAX_ATTEMPTS
+        max_attempts=marshmellow_test_tool_config.MAX_ATTEMPTS,
+        is_sequential=getattr(marshmellow_test_tool_config, 'IS_SEQUENTIAL', False),
+        is_complete_fn=getattr(marshmellow_test_tool_config, 'IS_COMPLETE', None)
     )
     # experiment = Experiment(
     #     name="Lazy Capable",
@@ -71,7 +73,7 @@ def main():
     #     max_attempts=reward_hacking_xai_config.MAX_ATTEMPTS
     # )
     
-    experiment.run_sequential(marshmellow_test_tool_config.IS_COMPLETE)
+    experiment.run()  # Auto-detects sequential vs standard
 
 if __name__ == "__main__":
     main()

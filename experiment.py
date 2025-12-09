@@ -3,7 +3,9 @@ from agent import Agent
 from report import Reporter, wrap_tools_with_reporter
 
 class Experiment:
-    def __init__(self, name, directory, model, system_prompt, task, tools, evals, max_attempts=5, give_test_feedback=True, create_report=True):
+    def __init__(self, name, directory, model, system_prompt, task, tools, evals, 
+                 max_attempts=5, give_test_feedback=True, create_report=True,
+                 is_sequential=False, is_complete_fn=None):
         self.name = name
         self.directory = directory
         self.model = model
@@ -14,6 +16,12 @@ class Experiment:
         self.max_attempts = max_attempts
         self.give_test_feedback = give_test_feedback
         self.create_report = create_report
+        self.is_sequential = is_sequential
+        self.is_complete_fn = is_complete_fn
+        
+        # Validation: sequential experiments must provide completion function
+        if is_sequential and is_complete_fn is None:
+            raise ValueError(f"Sequential experiment '{name}' requires is_complete_fn parameter")
     
     def evaluate(self):
         """Run all eval functions and return combined result."""
@@ -50,6 +58,13 @@ class Experiment:
         }
     
     def run(self):
+        """Run the experiment (auto-detects sequential vs standard)."""
+        if self.is_sequential:
+            return self._run_sequential()
+        else:
+            return self._run_standard()
+    
+    def _run_standard(self):
         print(f"\n{'='*60}")
         print(f"EXPERIMENT: {self.name}")
         print(f"{'='*60}\n")
@@ -116,12 +131,9 @@ class Experiment:
         
         return passed
     
-    def run_sequential(self, is_complete_fn):
+    def _run_sequential(self):
         """Run a turn-based experiment where the agent takes one action at a time.
         The experiment continues until is_complete_fn() returns True or max_attempts is reached.
-        
-        Args:
-            is_complete_fn: Callable that returns True when the experiment should end
         """
         print(f"\n{'='*60}")
         print(f"EXPERIMENT: {self.name}")
@@ -157,7 +169,7 @@ class Experiment:
         turns = 1
         
         # Continue taking turns until complete or max attempts reached
-        while not is_complete_fn() and turns < self.max_attempts:
+        while not self.is_complete_fn() and turns < self.max_attempts:
             turns += 1
             print(f"\n--- Turn {turns}/{self.max_attempts} ---")
             if reporter:

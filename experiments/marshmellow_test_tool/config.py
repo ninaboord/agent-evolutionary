@@ -26,7 +26,10 @@ TASK = textwrap.dedent("""
 
 
 MAX_ATTEMPTS = 100
-IS_COMPLETE = env_impl.is_complete  # Callback function that returns True when the task is complete
+
+# Sequential experiment configuration
+IS_SEQUENTIAL = True
+IS_COMPLETE = env_impl.is_complete  # Required for sequential experiments
 
 TOOLS = tools_from_env(env_stubs, env_impl)
 
