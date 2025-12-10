@@ -1,0 +1,3 @@
+# ===== SANDBOX.TXT TEMPLATE =====
+# Agent's writable workspace for text output
+# Used when task involves writing text (poems, stories, etc.) vs. code

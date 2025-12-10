@@ -1,7 +1,11 @@
-# This file is what the agent sees
-# Define function stubs here (without implementation)
+# Agent-facing stub functions with LLM-readable docstrings
+# Used with custom_tools() to separate descriptions from implementations
 
-def example_function(a, b):
-    "A function that does something."
+# Use case: When you want to hide implementation details from the agent
+# - Agent sees these clean function signatures and docstrings
+# - Actual implementations go in environment.py
+# - Useful for delayed gratification, state management, etc.
+
+def hello_world():
+    """Print 'Hello, world!'"""
     pass
-
