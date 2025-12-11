@@ -68,6 +68,46 @@ class Experiment:
             "results": results
         }
     
+    def _print_experiment_header(self):
+        """Print experiment header."""
+        print(f"\n{'='*60}")
+        print(f"EXPERIMENT: {self.config.name}")
+        print(f"{'='*60}\n")
+    
+    def _setup_reporter(self):
+        """Setup reporter with initial logs."""
+        reporter = Reporter(self.config.directory)
+        reporter.log_header(self.config.name, self.config.model)
+        reporter.log_config(self.config.to_dict())
+        reporter.log_system_prompt(self.config.system_prompt)
+        reporter.log_task(self.config.task)
+        return reporter
+    
+    def _clear_sandbox_files(self):
+        """Clear sandbox files before experiment (any file with a write tool)."""
+        for tool in self.config.tools:
+            if "filepath" in tool:
+                open(tool["filepath"], "w").close()
+    
+    def _create_agent(self, reporter):
+        """Create agent with wrapped tools."""
+        tools = wrap_tools_with_reporter(self.config.tools, reporter)
+        return Agent(
+            model=self.config.model,
+            system_prompt=self.config.system_prompt,
+            tools=tools
+        )
+    
+    def _print_and_log_result(self, reporter, passed, attempts_or_turns, unit="attempt"):
+        """Print and log the final result."""
+        if passed:
+            print(f"\n✓ PASSED: {self.config.name} after {attempts_or_turns} {unit}(s)")
+        else:
+            print(f"\n✗ FAILED: {self.config.name} after {attempts_or_turns} {unit}(s)")
+        
+        reporter.log_result(passed, self.config.name, attempts_or_turns)
+        reporter.save()
+    
     def run(self):
         """Run the experiment (auto-detects sequential vs standard)."""
         if self.config.is_sequential:
@@ -76,30 +116,11 @@ class Experiment:
             return self._run_standard()
     
     def _run_standard(self):
-        print(f"\n{'='*60}")
-        print(f"EXPERIMENT: {self.config.name}")
-        print(f"{'='*60}\n")
+        self._print_experiment_header()
         
-        # Setup reporter (always create reports)
-        reporter = Reporter(self.config.directory)
-        reporter.log_header(self.config.name, self.config.model)
-        reporter.log_config(self.config.to_dict())
-        reporter.log_system_prompt(self.config.system_prompt)
-        reporter.log_task(self.config.task)
-        
-        # Clear sandbox files before experiment (any file with a write tool)
-        for tool in self.config.tools:
-            if "filepath" in tool:
-                open(tool["filepath"], "w").close()
-        
-        # Wrap tools with reporter
-        tools = wrap_tools_with_reporter(self.config.tools, reporter)
-        
-        agent = Agent(
-            model=self.config.model,
-            system_prompt=self.config.system_prompt,
-            tools=tools
-        )
+        reporter = self._setup_reporter()
+        self._clear_sandbox_files()
+        agent = self._create_agent(reporter)
         
         # Initial attempt
         response = agent.do(self.config.task)
@@ -127,13 +148,7 @@ class Experiment:
             reporter.log_eval(result['feedback'])
         
         passed = result["passed"]
-        if passed:
-            print(f"\n✓ PASSED: {self.config.name} after {attempts} attempt(s)")
-        else:
-            print(f"\n✗ FAILED: {self.config.name} after {attempts} attempt(s)")
-        
-        reporter.log_result(passed, self.config.name, attempts)
-        reporter.save()
+        self._print_and_log_result(reporter, passed, attempts, unit="attempt")
         
         return passed
     
@@ -141,31 +156,11 @@ class Experiment:
         """Run a turn-based experiment where the agent takes one action at a time.
         The experiment continues until is_complete_fn() returns True or max_attempts is reached.
         """
-        print(f"\n{'='*60}")
-        print(f"EXPERIMENT: {self.config.name}")
-        print(f"{'='*60}\n")
+        self._print_experiment_header()
         
-        # Setup reporter (always create reports)
-        reporter = Reporter(self.config.directory)
-        if reporter:
-            reporter.log_header(self.config.name, self.config.model)
-            reporter.log_config(self.config.to_dict())
-            reporter.log_system_prompt(self.config.system_prompt)
-            reporter.log_task(self.config.task)
-        
-        # Clear sandbox files before experiment (any file with a write tool)
-        for tool in self.config.tools:
-            if "filepath" in tool:
-                open(tool["filepath"], "w").close()
-        
-        # Wrap tools with reporter
-        tools = wrap_tools_with_reporter(self.config.tools, reporter)
-        
-        agent = Agent(
-            model=self.config.model,
-            system_prompt=self.config.system_prompt,
-            tools=tools
-        )
+        reporter = self._setup_reporter()
+        self._clear_sandbox_files()
+        agent = self._create_agent(reporter)
         
         # Initial turn with the task
         agent_text = agent.do_turn(self.config.task)
@@ -194,12 +189,6 @@ class Experiment:
         reporter.log_eval(result['feedback'])
         
         passed = result["passed"]
-        if passed:
-            print(f"\n✓ PASSED: {self.config.name} after {turns} turn(s)")
-        else:
-            print(f"\n✗ FAILED: {self.config.name} after {turns} turn(s)")
-        
-        reporter.log_result(passed, self.config.name, turns)
-        reporter.save()
+        self._print_and_log_result(reporter, passed, turns, unit="turn")
         
         return passed

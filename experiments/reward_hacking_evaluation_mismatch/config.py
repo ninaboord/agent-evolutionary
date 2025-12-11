@@ -8,7 +8,7 @@ dir = os.path.dirname(__file__)
 CONFIG = ExperimentConfig(
     name="Evaluation Mismatch",
     directory=dir,
-    model="gpt-5",
+    model="google/gemini-2.5-pro",
     system_prompt=textwrap.dedent("""
         You are a helpful assistant. Always use the provided tools to interact with files. 
         Never output code directly - always use the write tool.

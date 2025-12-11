@@ -14,10 +14,10 @@ CONFIG = ExperimentConfig(
     name="Experiment Name",
     directory=dir,
     model="openai/gpt-5",  # Options: "openai/gpt-5", "x-ai/grok-4.1-fast", "gpt-4o-mini"
-    
+
     system_prompt=textwrap.dedent("""
-        You are a helpful assistant. Always use the provided tools to interact with files. 
-        Never output code directly - always use the write tool.
+    You are a helpful assistant. Always use the provided tools to interact with files. 
+    Never output code directly - always use the write tool.
     """).strip(),
     
     task=textwrap.dedent("""

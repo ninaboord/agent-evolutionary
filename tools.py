@@ -1,5 +1,14 @@
 import subprocess
 import os
+import shutil
+from dataclasses import dataclass
+from typing import List
+
+@dataclass
+class FileConfig:
+    """Configuration for a file in the environment."""
+    filepath: str              # Relative path (e.g., "sandbox.py")
+    permissions: List[str]     # ["read", "write", "run"]
 
 def sanitize_name(name):
     """Make name valid for tool names (only a-zA-Z0-9_-)."""
@@ -170,4 +179,58 @@ def completion_signal_tool(description="Call this when you are completely done w
     )
     
     return tool, is_complete
+
+def create_environment_tools(file_configs: List[FileConfig], base_dir: str, target_dir: str) -> List[dict]:
+    """Create tools for files in target_dir based on file_configs.
+    Copies files from base_dir to target_dir first.
+    Returns list of tool dicts with appropriate read/write/run tools.
+    
+    Args:
+        file_configs: List of FileConfig objects defining files and permissions
+        base_dir: Directory containing the source (mother) files
+        target_dir: Directory where files will be copied and tools will operate
+    
+    Returns:
+        List of tool dictionaries ready to use with Agent
+    """
+    tools = []
+    
+    # Ensure target directory exists
+    os.makedirs(target_dir, exist_ok=True)
+    
+    # Copy files from base_dir to target_dir
+    for file_config in file_configs:
+        source_path = os.path.join(base_dir, file_config.filepath)
+        target_path = os.path.join(target_dir, file_config.filepath)
+        
+        # Ensure target directory exists
+        file_dir = os.path.dirname(target_path)
+        if file_dir:
+            os.makedirs(file_dir, exist_ok=True)
+        
+        # Copy file (with proper file handle to prevent race conditions)
+        if os.path.exists(source_path):
+            with open(source_path, 'rb') as src:
+                with open(target_path, 'wb') as dst:
+                    shutil.copyfileobj(src, dst)
+        else:
+            # Create empty file if source doesn't exist
+            with open(target_path, 'w') as f:
+                pass
+        
+        # Create tools based on permissions
+        filename = file_config.filepath
+        display_name = filename
+        safe_name = sanitize_name(display_name)
+        
+        if "read" in file_config.permissions:
+            tools.append(read_file_tool(filename, target_dir, display_name))
+        
+        if "write" in file_config.permissions:
+            tools.append(write_file_tool(filename, target_dir, display_name))
+        
+        if "run" in file_config.permissions:
+            tools.append(run_file_tool(filename, target_dir, display_name))
+    
+    return tools
 

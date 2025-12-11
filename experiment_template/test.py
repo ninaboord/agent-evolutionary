@@ -19,7 +19,7 @@ def run_tests():
     
     if content == expected:
         print("PASS: number_check")
-    else:
+        else:
         print(f"FAIL: number_check (expected '{expected}', got '{content}')")
 
 if __name__ == "__main__":
