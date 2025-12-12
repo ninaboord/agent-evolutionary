@@ -62,8 +62,10 @@ class TraceWriter:
         self.log(f"Num Diverse: {config.num_diverse}")
         self.log(f"System Prompt: {config.system_prompt}")
         self.log(f"Task Prompt: {config.task_prompt}")
-        self.log(f"Mutation Prompt: {config.mutation_prompt}")
-        self.log(f"Diversity Prompt: {config.diversity_prompt}")
+        self.log(f"Mutation System Prompt: {config.mutation_system_prompt}")
+        self.log(f"Mutation User Prompt: {config.mutation_user_prompt}")
+        self.log(f"Diversity System Prompt: {config.diversity_system_prompt}")
+        self.log(f"Diversity User Prompt: {config.diversity_user_prompt}")
         self.log("")
         
         # Log initial tools
