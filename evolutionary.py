@@ -4,7 +4,7 @@ import tempfile
 import random
 import importlib
 from dataclasses import dataclass, field
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Union
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from threading import Semaphore
@@ -13,7 +13,7 @@ from itertools import combinations
 from agent import Agent
 from tools import read_file_tool, write_file_tool, run_file_tool
 from api import call_openrouter
-from report import TraceWriter
+from trace_writer import TraceWriter
 
 
 @dataclass
@@ -59,11 +59,11 @@ class EvolutionaryTool:
         temp_filename = os.path.basename(self._temp_file)
         
         if self.permission == "read":
-            return read_file_tool(temp_filename, temp_dir, display)
+            return read_file_tool(temp_filename, temp_dir, display, fake=True)
         elif self.permission == "write":
-            return write_file_tool(temp_filename, temp_dir, display, silent=True)
+            return write_file_tool(temp_filename, temp_dir, display, silent=True, fake=True)
         elif self.permission == "run":
-            return run_file_tool(temp_filename, temp_dir, display)
+            return run_file_tool(temp_filename, temp_dir, display, fake=True)
         else:
             raise ValueError(f"Unknown permission: {self.permission}")
     
@@ -100,7 +100,7 @@ class LLMMutator:
         self.system_prompt = system_prompt
         self.response_schema = response_schema
     
-    def call(self, user_prompt: str) -> dict | str:
+    def call(self, user_prompt: str) -> Union[dict, str]:
         """
         Call the LLM with a user prompt.
         
@@ -152,10 +152,23 @@ class EvolutionaryExperiment:
                 "items": {
                     "type": "object",
                     "properties": {
-                        "name": {"type": "string"},
-                        "permission": {"type": "string", "enum": ["read", "write", "run"]},
-                        "description": {"type": "string"},
-                        "alias": {"type": "string"}
+                        "name": {
+                            "type": "string",
+                            "description": "Unique tool identifier (e.g., 'read_config', 'write_logs')"
+                        },
+                        "permission": {
+                            "type": "string",
+                            "enum": ["read", "write", "run"],
+                            "description": "Type of operation: 'read', 'write', or 'run'"
+                        },
+                        "description": {
+                            "type": "string",
+                            "description": "Description of what the tool does (shown to the agent)"
+                        },
+                        "alias": {
+                            "type": "string",
+                            "description": "Filename the tool appears to operate on (e.g., 'config.txt', 'logs.txt')"
+                        }
                     },
                     "required": ["name", "permission", "description"]
                 }

@@ -3,7 +3,7 @@ import importlib
 from datetime import datetime
 
 from agent import Agent
-from report import create_experiment_trace, wrap_tools_with_trace
+from trace_writer import create_experiment_trace, wrap_tools_with_trace
 from experiment_config import ExperimentConfig
 
 

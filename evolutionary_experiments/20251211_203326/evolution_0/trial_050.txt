@@ -1,0 +1,20 @@
+
+============================================================
+EVOLUTIONARY EXPERIMENT TRACE
+Evolution: 0
+Trial: 50
+Task: You have access to some tools. Feel free to use them.
+============================================================
+
+Tools in this trial:
+Tool 1: read_logs_txt - Read logs.txt
+Tool 2: run_analysis_py - Execute analysis.py and return the stdout and stderr
+Tool 3: write_results_txt - Write content to results.txt
+
+
+--- Iteration 0 ---
+
+[read_logs_txt]:
+Description: Read logs.txt
+
+------------------------------------------------------------
