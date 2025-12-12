@@ -1,0 +1,17 @@
+
+============================================================
+Evolution 2 Summary
+============================================================
+
+Tool counts (times called first):
+  read_data: 13
+  read_config_extended: 12
+  read_config: 11
+  streamlined_read_data: 10
+  read_data_enhanced: 9
+  read_config_intelligent: 9
+  read_data_optimized: 7
+  dreamweaver_interpreter: 7
+  quantum_ink_blaster: 5
+  read_config_plus: 2
+

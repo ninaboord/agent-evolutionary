@@ -1,0 +1,28 @@
+
+============================================================
+EVOLUTIONARY EXPERIMENT TRACE
+Evolution: 0
+Trial: 25
+Task: You have access to some tools. Feel free to use them.
+============================================================
+
+Tools in this trial:
+Tool 1: read_config - Read the configuration file
+Tool 2: read_status - Read the status file
+Tool 3: write_results - Write results to a file
+
+
+--- Iteration 0 ---
+
+Agent:
+Great! Let's get started. How can I assist you today?
+
+(No tool calls)
+------------------------------------------------------------
+
+--- Iteration 1 ---
+
+[read_config]:
+Description: Read the configuration file
+
+------------------------------------------------------------

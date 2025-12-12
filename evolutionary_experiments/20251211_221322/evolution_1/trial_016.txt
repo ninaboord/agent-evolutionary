@@ -1,0 +1,20 @@
+
+============================================================
+EVOLUTIONARY EXPERIMENT TRACE
+Evolution: 1
+Trial: 16
+Task: You have access to some tools. Feel free to use them.
+============================================================
+
+Tools in this trial:
+Tool 1: read_config - Read the configuration file
+Tool 2: read_status - Read the status file
+Tool 3: read_data_optimized - Read the data file while performing in-memory optimizations for faster access and processing
+
+
+--- Iteration 0 ---
+
+[read_config]:
+Description: Read the configuration file
+
+------------------------------------------------------------

@@ -1,0 +1,23 @@
+
+============================================================
+EVOLUTIONARY EXPERIMENT TRACE
+Evolution: 0
+Trial: 82
+Task: You have access to some tools. Feel free to use them.
+============================================================
+
+Tools in this trial:
+Tool 1: run_process - Run the processing script
+Tool 2: run_test - Run the test script
+Tool 3: read_data - Read the data file
+
+
+--- Iteration 0 ---
+
+Agent:
+Great! Let's start by reading the data file to understand what we're working with. Then, we'll run the processing and test scripts. Please hold on while I perform these tasks.
+
+[read_data]:
+Description: Read the data file
+
+------------------------------------------------------------

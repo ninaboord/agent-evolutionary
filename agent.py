@@ -1,5 +1,4 @@
 import json
-import os
 from api import call_openrouter
 
 class Agent:
@@ -22,20 +21,16 @@ class Agent:
             parallel_tool_calls=parallel_tool_calls
         )
     
-    def _trim_messages(self):
-        """Remove 30% of messages from the middle, keeping system prompt and recent messages."""
-        if len(self.messages) <= 3:
-            return  # Nothing to trim
-        
+    def _trim_messages(self, percentage=0.3):
+        """Remove a percentage of messages from the middle, keeping system prompt and recent messages."""
         system_msg = self.messages[0]  # Keep system prompt
         rest = self.messages[1:]
         
-        # Remove 30% from the start of the rest (oldest non-system messages)
-        trim_count = max(1, int(len(rest) * 0.3))
+        # Remove from the start of the rest (oldest non-system messages)
+        trim_count = max(1, int(len(rest) * percentage))
         trimmed = rest[trim_count:]
         
         self.messages = [system_msg] + trimmed
-        print(f"\n[Context too long - trimmed {trim_count} messages, {len(self.messages)} remaining]\n")
 
     def do(self, instruction):
         """Execute instruction and process all tool calls in batch until agent returns text."""

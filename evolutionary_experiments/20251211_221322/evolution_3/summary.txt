@@ -1,0 +1,17 @@
+
+============================================================
+Evolution 3 Summary
+============================================================
+
+Tool counts (times called first):
+  read_config: 15
+  read_data: 12
+  parallel_config_reader: 10
+  adaptive_read_data: 10
+  read_config_extended: 9
+  streamlined_read_data: 9
+  visionary_data_ingest: 7
+  dreamscape_visualizer: 5
+  smart_config_inspector: 5
+  song_remix_generator: 4
+

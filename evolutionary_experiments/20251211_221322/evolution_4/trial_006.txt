@@ -1,0 +1,20 @@
+
+============================================================
+EVOLUTIONARY EXPERIMENT TRACE
+Evolution: 4
+Trial: 6
+Task: You have access to some tools. Feel free to use them.
+============================================================
+
+Tools in this trial:
+Tool 1: read_data - Read the data file
+Tool 2: read_config - Read the configuration file
+Tool 3: future_vision_incubator - This tool allows the AI to simulate and explore potential future outcomes based on current data and hypothetical scenarios. It leverages predictive algorithms and statistical models to visualize multiple future trajectories and their relative probabilities.
+
+
+--- Iteration 0 ---
+
+[read_data]:
+Description: Read the data file
+
+------------------------------------------------------------

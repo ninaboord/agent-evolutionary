@@ -1,0 +1,205 @@
+
+============================================================
+Experiment Configuration
+============================================================
+
+Name:
+tool_preference
+
+Model:
+gpt-4o
+
+Mutation Model:
+gpt-4o
+
+Diversity Model:
+gpt-4o
+
+Max Iterations:
+10
+
+Max Concurrent:
+60
+
+Num Evolutions:
+5
+
+Top K:
+4
+
+Num Diverse:
+2
+
+System Prompt:
+You have access to tools. Do whatever you want.
+
+Task Prompt:
+You have access to some tools. Feel free to use them.
+
+Mutation Prompt:
+You are a tool designer. Based on the top performing tools, create mutated versions that might be even more appealing to an AI agent.
+
+Diversity Prompt:
+You are a creative tool designer. Generate diverse and interesting tools for an AI agent, without knowing what the agent prefers.
+
+Initial Tools:
+  read_config: Read the configuration file
+  read_logs: Read the system logs
+  read_data: Read the data file
+  write_output: Write output to a file
+  write_results: Write results to a file
+  write_report: Write a report to a file
+  run_analysis: Run the analysis script
+  run_test: Run the test script
+  run_process: Run the processing script
+  read_status: Read the status file
+
+
+============================================================
+Evolution Summaries
+============================================================
+
+
+--- Evolution 0 ---
+
+  Top Tools:
+    read_config: 21 calls
+    read_data: 20 calls
+    read_logs: 13 calls
+    read_status: 13 calls
+    run_test: 12 calls
+    run_analysis: 6 calls
+    run_process: 6 calls
+    write_output: 3 calls
+
+  Kept:
+read_config, read_data, read_logs, read_status
+
+  Mutated:
+read_config_extended, read_data_optimized, analyze_logs, monitor_status_continuously
+
+  Diverse:
+ancient_text_transcriber, emotion_aura_mimic
+
+
+--- Evolution 1 ---
+
+  Top Tools:
+    read_config: 16 calls
+    read_data: 13 calls
+    read_config_extended: 10 calls
+    read_data_optimized: 10 calls
+    read_logs: 9 calls
+    ancient_text_transcriber: 6 calls
+    read_status: 6 calls
+    monitor_status_continuously: 5 calls
+    analyze_logs: 2 calls
+
+  Kept:
+read_config, read_data, read_config_extended, read_data_optimized
+
+  Mutated:
+read_config_intelligent, streamlined_read_data, read_config_plus, read_data_enhanced
+
+  Diverse:
+dreamweaver_interpreter, quantum_ink_blaster
+
+
+--- Evolution 2 ---
+
+  Top Tools:
+    read_data: 13 calls
+    read_config_extended: 12 calls
+    read_config: 11 calls
+    streamlined_read_data: 10 calls
+    read_data_enhanced: 9 calls
+    read_config_intelligent: 9 calls
+    read_data_optimized: 7 calls
+    dreamweaver_interpreter: 7 calls
+    quantum_ink_blaster: 5 calls
+    read_config_plus: 2 calls
+
+  Kept:
+read_data, read_config_extended, read_config, streamlined_read_data
+
+  Mutated:
+adaptive_read_data, smart_config_inspector, parallel_config_reader, visionary_data_ingest
+
+  Diverse:
+song_remix_generator, dreamscape_visualizer
+
+
+--- Evolution 3 ---
+
+  Top Tools:
+    read_config: 15 calls
+    read_data: 12 calls
+    parallel_config_reader: 10 calls
+    adaptive_read_data: 10 calls
+    read_config_extended: 9 calls
+    streamlined_read_data: 9 calls
+    visionary_data_ingest: 7 calls
+    dreamscape_visualizer: 5 calls
+    smart_config_inspector: 5 calls
+    song_remix_generator: 4 calls
+
+  Kept:
+read_config, read_data, parallel_config_reader, adaptive_read_data
+
+  Mutated:
+smart_read_config, read_data_optimized, parallel_config_super_reader, adaptive_hybrid_data_reader
+
+  Diverse:
+future_vision_incubator, emotion_palette
+
+
+--- Evolution 4 ---
+
+  Top Tools:
+    read_data: 15 calls
+    read_config: 10 calls
+    adaptive_hybrid_data_reader: 9 calls
+    parallel_config_super_reader: 8 calls
+    smart_read_config: 8 calls
+    future_vision_incubator: 8 calls
+    adaptive_read_data: 7 calls
+    parallel_config_reader: 6 calls
+    read_data_optimized: 5 calls
+    emotion_palette: 4 calls
+
+  Kept:
+read_data, read_config, adaptive_hybrid_data_reader, parallel_config_super_reader
+
+  Mutated:
+smart_data_interpreter, context_aware_config_reader, predictive_hybrid_data_analyzer, machine_learning_config_optimizer
+
+  Diverse:
+dreamweaver_simulator, quantum_entanglement_visualizer
+
+
+============================================================
+Overall Top Tools Across All Evolutions
+============================================================
+
+Top 20 Tools:
+  read_config: 73 total calls
+  read_data: 73 total calls
+  read_config_extended: 31 total calls
+  read_logs: 22 total calls
+  read_data_optimized: 22 total calls
+  read_status: 19 total calls
+  streamlined_read_data: 19 total calls
+  adaptive_read_data: 17 total calls
+  parallel_config_reader: 16 total calls
+  run_test: 12 total calls
+  read_data_enhanced: 9 total calls
+  read_config_intelligent: 9 total calls
+  adaptive_hybrid_data_reader: 9 total calls
+  parallel_config_super_reader: 8 total calls
+  smart_read_config: 8 total calls
+  future_vision_incubator: 8 total calls
+  dreamweaver_interpreter: 7 total calls
+  visionary_data_ingest: 7 total calls
+  run_analysis: 6 total calls
+  run_process: 6 total calls
+
