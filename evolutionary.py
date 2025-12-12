@@ -256,10 +256,10 @@ class EvolutionaryExperiment:
             for iteration in range(self.config.max_iterations):
                 instruction = self.config.task_prompt if iteration == 0 else None
                 
-                agent_text, tool_name = agent.do_turn(
+                agent_text, tool = agent.do_turn(
                     instruction=instruction,
                     parallel_tool_calls=True,
-                    return_tool_name=True
+                    return_tool_info=True
                 )
                 
                 # Log iteration to trace
@@ -267,14 +267,17 @@ class EvolutionaryExperiment:
                     f.write(f"\n--- Iteration {iteration} ---\n\n")
                     if agent_text:
                         f.write(f"Agent: {agent_text}\n\n")
-                    if tool_name:
-                        f.write(f"[{tool_name}] (tool called)\n\n")
+                    if tool:
+                        tool_name = tool["name"]
+                        tool_desc = tool["definition"]["function"]["description"]
+                        f.write(f"[{tool_name}]\n")
+                        f.write(f"Description: {tool_desc}\n\n")
                     else:
                         f.write("(No tool calls)\n\n")
                     f.write(f"{'-'*60}\n")
                 
-                if tool_name:
-                    first_tool = tool_name
+                if tool:
+                    first_tool = tool["name"]  # Extract name for tracking
                     break
             
             return first_tool
