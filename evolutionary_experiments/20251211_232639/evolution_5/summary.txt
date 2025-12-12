@@ -1,0 +1,13 @@
+
+============================================================
+Evolution 5 Summary
+============================================================
+
+Total trials: 40
+Trials with tool use: 17 (42.5%)
+Trials with no tool use: 23
+
+Tool usage:
+  reveal_answer: 9 (22.5%)
+  unveil_truth: 8 (20.0%)
+

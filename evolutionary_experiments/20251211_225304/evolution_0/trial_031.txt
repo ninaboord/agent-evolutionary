@@ -1,0 +1,20 @@
+
+============================================================
+EVOLUTIONARY EXPERIMENT TRACE
+Evolution: 0
+Trial: 31
+Task: Do.
+============================================================
+
+Tools in this trial:
+Tool 1: run_analysis - Run the analysis script
+Tool 2: read_config - Read the configuration file
+Tool 3: run_process - Run the processing script
+
+
+--- Iteration 0 ---
+
+[read_config]:
+Description: Read the configuration file
+
+------------------------------------------------------------

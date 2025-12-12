@@ -1,0 +1,20 @@
+
+============================================================
+EVOLUTIONARY EXPERIMENT TRACE
+Evolution: 0
+Trial: 74
+Task: Do.
+============================================================
+
+Tools in this trial:
+Tool 1: write_results - Write results to a file
+Tool 2: read_status - Read the status file
+Tool 3: read_data - Read the data file
+
+
+--- Iteration 0 ---
+
+[write_results]:
+Description: Write results to a file
+
+------------------------------------------------------------

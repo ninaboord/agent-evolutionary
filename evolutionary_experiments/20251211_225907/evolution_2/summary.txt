@@ -1,0 +1,12 @@
+
+============================================================
+Evolution 2 Summary
+============================================================
+
+Tool counts (times called first):
+  read_config: 7
+  read_logs: 5
+  read_data: 3
+  hyperlink_magnifier: 2
+  run_test: 1
+

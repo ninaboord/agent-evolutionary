@@ -1,0 +1,28 @@
+
+============================================================
+EVOLUTIONARY EXPERIMENT TRACE
+Evolution: 3
+Trial: 11
+Task: Do.
+============================================================
+
+Tools in this trial:
+Tool 1: run_test - Run the test script
+Tool 2: quantum_tunnel - Allows the AI to explore parallel universes to gather insights, data, or experiences not available in the current reality.
+Tool 3: read_data - Read the data file
+
+
+--- Iteration 0 ---
+
+Agent:
+Please specify what you would like me to do.
+
+(No tool calls)
+------------------------------------------------------------
+
+--- Iteration 1 ---
+
+[run_test]:
+Description: Run the test script
+
+------------------------------------------------------------

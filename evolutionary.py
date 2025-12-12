@@ -139,7 +139,7 @@ class EvolutionaryExperiment:
         Run one trial with 3 tools. Return name of first tool called, or None.
         
         Args:
-            tool_subset: List of 3 tool dicts with keys: name, description
+            tool_subset: List of tool dicts with keys: name, description
             trial_num: Trial number for logging
             evolution: Evolution number
         
@@ -225,21 +225,29 @@ class EvolutionaryExperiment:
     
     def run_evolution(self, evolution: int) -> Dict[str, int]:
         """
-        Run all 120 trials (10 choose 3) for one evolution.
+        Run all trials (N choose tools_per_trial) for one evolution.
         
         Returns:
             Dict mapping tool name -> count of times it was called first
         """
-        print(f"Evolution {evolution + 1}/{self.config.num_evolutions}: Running {len(list(combinations(self.tools, 3)))} trials...")
+        # Generate all unique combinations
+        unique_combinations = list(combinations(self.tools, self.config.tools_per_trial))
+        num_unique = len(unique_combinations)
         
-        # Generate all combinations
-        trials = list(combinations(self.tools, 3))
+        # Duplicate each combination trials_per_combination times
+        trials = []
+        for combo in unique_combinations:
+            for _ in range(self.config.trials_per_combination):
+                trials.append(list(combo))
+        
+        num_trials = len(trials)
+        print(f"Evolution {evolution + 1}/{self.config.num_evolutions}: Running {num_trials} trials ({num_unique} unique combinations × {self.config.trials_per_combination} runs each)...")
         
         # Run trials in parallel
         results = []
         with ThreadPoolExecutor(max_workers=self.config.max_concurrent) as executor:
             futures = {
-                executor.submit(self._run_trial_with_semaphore, (list(trial), i, evolution)): i
+                executor.submit(self._run_trial_with_semaphore, (trial, i, evolution)): i
                 for i, trial in enumerate(trials)
             }
             
@@ -260,13 +268,29 @@ class EvolutionaryExperiment:
             elif tool_name:
                 counts[tool_name] = counts.get(tool_name, 0) + 1
         
+        # Calculate usage stats
+        total_trials = len(results)
+        total_tool_calls = sum(counts.values())
+        overall_usage_rate = (total_tool_calls / total_trials * 100) if total_trials > 0 else 0
+        
         # Write summary
         summary_path = os.path.join(self.experiment_dir, f"evolution_{evolution}", "summary.txt")
         summary = TraceWriter(summary_path)
         summary.log_header(f"Evolution {evolution} Summary")
+        
+        # Log usage rate
+        summary.log(f"Total trials: {total_trials}")
+        summary.log(f"Trials with tool use: {total_tool_calls} ({overall_usage_rate:.1f}%)")
+        summary.log(f"Trials with no tool use: {no_tool_calls}")
+        summary.log("")
+        
+        # Log per-tool counts with percentage
         sorted_counts = sorted(counts.items(), key=lambda x: x[1], reverse=True)
-        counts_str = "\n".join([f"  {name}: {count}" for name, count in sorted_counts])
-        summary.log_item("Tool counts (times called first)", counts_str)
+        counts_str = "\n".join([
+            f"  {name}: {count} ({count/total_trials*100:.1f}%)" 
+            for name, count in sorted_counts
+        ])
+        summary.log_item("Tool usage", counts_str)
         
         return counts
     
@@ -285,7 +309,8 @@ class EvolutionaryExperiment:
             for tool in top_tools
         ])
         prompt = self.config.mutation_prompt.format(
-            top_tools_info=top_tools_info
+            top_tools_info=top_tools_info,
+            num_tools=len(top_tools)
         )
         return textwrap.dedent(prompt).strip()
     
@@ -378,14 +403,19 @@ class EvolutionaryExperiment:
             
             # Select top k
             top_tools = self.select_top_k(counts)
+            total_trials = sum(counts.values())
             print(f"\nTop {len(top_tools)} tools:")
             for tool in top_tools:
-                print(f"  {tool['name']}: {counts.get(tool['name'], 0)} calls")
+                tool_count = counts.get(tool['name'], 0)
+                usage_pct = (tool_count / total_trials * 100) if total_trials > 0 else 0
+                print(f"  {tool['name']}: {tool_count} calls ({usage_pct:.1f}%)")
             
             # Mutate and diversify
             mutated = self.mutate_tools(top_tools)
             diverse = self.generate_diverse_tools()
             self.tools = top_tools + mutated + diverse
+            
+            print(f"Population: {len(self.tools)} tools (kept {len(top_tools)} + mutated {len(mutated)} + diverse {len(diverse)})")
             
             # Store this evolution's data
             evolution_history.append({

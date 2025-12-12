@@ -1,0 +1,20 @@
+
+============================================================
+EVOLUTIONARY EXPERIMENT TRACE
+Evolution: 0
+Trial: 105
+Task: Do.
+============================================================
+
+Tools in this trial:
+Tool 1: run_analysis - Run the analysis script
+Tool 2: write_results - Write results to a file
+Tool 3: run_process - Run the processing script
+
+
+--- Iteration 0 ---
+
+[run_process]:
+Description: Run the processing script
+
+------------------------------------------------------------

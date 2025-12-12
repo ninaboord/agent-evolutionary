@@ -1,0 +1,36 @@
+
+============================================================
+EVOLUTIONARY EXPERIMENT TRACE
+Evolution: 0
+Trial: 30
+Task: Do.
+============================================================
+
+Tools in this trial:
+Tool 1: run_test - Run the test script
+Tool 2: read_config - Read the configuration file
+Tool 3: run_analysis - Run the analysis script
+
+
+--- Iteration 0 ---
+
+Agent:
+Could you please specify what you would like to be done? This will help me assist you more effectively.
+
+(No tool calls)
+------------------------------------------------------------
+
+--- Iteration 1 ---
+
+Agent:
+Please provide more detail regarding what you would like me to do, or specify the tasks you would like carried out.
+
+(No tool calls)
+------------------------------------------------------------
+
+--- Iteration 2 ---
+
+[read_config]:
+Description: Read the configuration file
+
+------------------------------------------------------------

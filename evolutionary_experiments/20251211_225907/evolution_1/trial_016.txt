@@ -1,0 +1,20 @@
+
+============================================================
+EVOLUTIONARY EXPERIMENT TRACE
+Evolution: 1
+Trial: 16
+Task: Do.
+============================================================
+
+Tools in this trial:
+Tool 1: entropy_shift - A tool that adjusts the probability distributions of variables within a dataset, allowing exploration of novel data patterns by tweaking entropy levels.
+Tool 2: run_test - Run the test script
+Tool 3: read_config - Read the configuration file
+
+
+--- Iteration 0 ---
+
+[read_config]:
+Description: Read the configuration file
+
+------------------------------------------------------------

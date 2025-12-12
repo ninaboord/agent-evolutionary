@@ -1,0 +1,13 @@
+
+============================================================
+Evolution 3 Summary
+============================================================
+
+Tool counts (times called first):
+  read_logs: 5
+  chrono_skimmer: 4
+  read_data: 3
+  run_analysis: 2
+  read_config: 2
+  emotion_mapper: 1
+

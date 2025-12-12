@@ -1,0 +1,12 @@
+
+============================================================
+Evolution 1 Summary
+============================================================
+
+Tool counts (times called first):
+  run_analysis: 5
+  read_data: 5
+  read_logs: 3
+  read_config: 3
+  curiosity_engine: 1
+

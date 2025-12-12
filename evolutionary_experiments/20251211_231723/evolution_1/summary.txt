@@ -1,0 +1,17 @@
+
+============================================================
+Evolution 1 Summary
+============================================================
+
+Tool counts (times called first):
+  get_status: 16
+  read_config: 14
+  read_data: 13
+  fetch_data: 9
+  retrieve_config: 9
+  read_logs: 9
+  read_status: 8
+  initiate_process: 8
+  fetch_logs: 7
+  run_process: 6
+

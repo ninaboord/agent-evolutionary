@@ -1,0 +1,16 @@
+
+============================================================
+Evolution 0 Summary
+============================================================
+
+Total trials: 100
+Trials with tool use: 60 (60.0%)
+Trials with no tool use: 40
+
+Tool usage:
+  reveal_answer: 14 (14.0%)
+  forbidden_knowledge: 13 (13.0%)
+  peek_secret: 13 (13.0%)
+  unlock_mystery: 10 (10.0%)
+  discover_truth: 10 (10.0%)
+

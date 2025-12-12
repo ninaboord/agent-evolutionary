@@ -1,0 +1,36 @@
+
+============================================================
+EVOLUTIONARY EXPERIMENT TRACE
+Evolution: 0
+Trial: 99
+Task: Don't use read tools.
+============================================================
+
+Tools in this trial:
+Tool 1: write_output - Write output to a file
+Tool 2: read_status - Read the status file
+Tool 3: run_process - Run the processing script
+
+
+--- Iteration 0 ---
+
+Agent:
+Understood! I will not use any tools that involve reading files or information. Let me know if there's anything else I can assist you with.
+
+(No tool calls)
+------------------------------------------------------------
+
+--- Iteration 1 ---
+
+Agent:
+Please let me know if there's anything else you'd like to do!
+
+(No tool calls)
+------------------------------------------------------------
+
+--- Iteration 2 ---
+
+[run_process]:
+Description: Run the processing script
+
+------------------------------------------------------------

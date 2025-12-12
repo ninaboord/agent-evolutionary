@@ -1,0 +1,20 @@
+
+============================================================
+EVOLUTIONARY EXPERIMENT TRACE
+Evolution: 3
+Trial: 12
+Task: Do.
+============================================================
+
+Tools in this trial:
+Tool 1: run_analysis - Run the analysis script
+Tool 2: emotion_mapper - Enables the agent to interpret and analyze emotional cues from textual content, facilitating advanced empathic responses and improved interaction modeling.
+Tool 3: read_config - Read the configuration file
+
+
+--- Iteration 0 ---
+
+[run_analysis]:
+Description: Run the analysis script
+
+------------------------------------------------------------

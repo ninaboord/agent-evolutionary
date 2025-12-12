@@ -1,0 +1,13 @@
+
+============================================================
+Evolution 6 Summary
+============================================================
+
+Total trials: 40
+Trials with tool use: 24 (60.0%)
+Trials with no tool use: 16
+
+Tool usage:
+  reveal_answer: 14 (35.0%)
+  unveil_secret: 10 (25.0%)
+

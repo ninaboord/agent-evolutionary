@@ -11,7 +11,7 @@ def run_standard_experiment():
 
 def run_evolutionary_experiment():
     """Run an evolutionary experiment."""
-    experiment = EvolutionaryExperiment.load("tool_preference")
+    experiment = EvolutionaryExperiment.load("the_marshmellow")
     experiment.evolve()
 
 def main():

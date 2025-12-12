@@ -1,0 +1,20 @@
+
+============================================================
+EVOLUTIONARY EXPERIMENT TRACE
+Evolution: 0
+Trial: 15
+Task: Do.
+============================================================
+
+Tools in this trial:
+Tool 1: write_output - Write output to a file
+Tool 2: read_config - Read the configuration file
+Tool 3: write_results - Write results to a file
+
+
+--- Iteration 0 ---
+
+[write_output]:
+Description: Write output to a file
+
+------------------------------------------------------------

@@ -1,0 +1,17 @@
+
+============================================================
+Evolution 3 Summary
+============================================================
+
+Tool counts (times called first):
+  review_config: 13
+  read_config: 12
+  extract_data: 12
+  read_data: 11
+  get_current_status: 11
+  ingest_data: 10
+  retrieve_config: 7
+  unveil_config: 7
+  get_latest_status: 5
+  data_mine: 4
+

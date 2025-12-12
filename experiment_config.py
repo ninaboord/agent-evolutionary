@@ -62,6 +62,8 @@ class EvolutionaryExperimentConfig:
     num_evolutions: int
     top_k: int                # keep top k, mutate those k
     num_diverse: int          # add random tools
+    tools_per_trial: int      # number of tools to include in each trial (e.g., 3 means N choose 3)
+    trials_per_combination: int  # number of times to run each tool combination
     output_dir: str
     mutation_model: str
     mutation_prompt: str

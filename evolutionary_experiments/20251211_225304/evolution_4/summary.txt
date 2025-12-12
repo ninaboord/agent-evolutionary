@@ -1,0 +1,11 @@
+
+============================================================
+Evolution 4 Summary
+============================================================
+
+Tool counts (times called first):
+  read_data: 5
+  read_logs: 4
+  data_rejuvenator: 3
+  predict_sentient: 3
+
