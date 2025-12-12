@@ -285,8 +285,7 @@ class EvolutionaryExperiment:
             for tool in top_tools
         ])
         prompt = self.config.mutation_prompt.format(
-            top_tools_info=top_tools_info,
-            num_mutated=self.config.top_k
+            top_tools_info=top_tools_info
         )
         return textwrap.dedent(prompt).strip()
     
