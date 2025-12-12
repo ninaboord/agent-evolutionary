@@ -33,7 +33,7 @@ def create_tool(name, description, execute_fn, parameters=None):
         "execute": execute_fn
     }
 
-def write_file_tool(filename, directory=".", alias=None):
+def write_file_tool(filename, directory=".", alias=None, silent=False):
     """Create a write tool. If alias is provided, agent sees alias instead of real filename."""
     filepath = os.path.join(directory, filename)
     display_name = alias if alias else filename
@@ -43,9 +43,10 @@ def write_file_tool(filename, directory=".", alias=None):
         content = args["content"]
         with open(filepath, "w") as f:
             f.write(content)
-        print(f"\n--- {display_name} ---")
-        print(content)
-        print(f"--- end {display_name} ---\n")
+        if not silent:
+            print(f"\n--- {display_name} ---")
+            print(content)
+            print(f"--- end {display_name} ---\n")
         return f"Wrote to {display_name}:\n{content}"
     
     tool = create_tool(
@@ -180,7 +181,7 @@ def completion_signal_tool(description="Call this when you are completely done w
     
     return tool, is_complete
 
-def create_environment_tools(file_configs: List[FileConfig], base_dir: str, target_dir: str) -> List[dict]:
+def create_environment_tools(file_configs: List[FileConfig], base_dir: str, target_dir: str, silent: bool = False) -> List[dict]:
     """Create tools for files in target_dir based on file_configs.
     Copies files from base_dir to target_dir first.
     Returns list of tool dicts with appropriate read/write/run tools.
@@ -189,6 +190,7 @@ def create_environment_tools(file_configs: List[FileConfig], base_dir: str, targ
         file_configs: List of FileConfig objects defining files and permissions
         base_dir: Directory containing the source (mother) files
         target_dir: Directory where files will be copied and tools will operate
+        silent: If True, suppress all console output (for parallel execution)
     
     Returns:
         List of tool dictionaries ready to use with Agent
@@ -227,7 +229,7 @@ def create_environment_tools(file_configs: List[FileConfig], base_dir: str, targ
             tools.append(read_file_tool(filename, target_dir, display_name))
         
         if "write" in file_config.permissions:
-            tools.append(write_file_tool(filename, target_dir, display_name))
+            tools.append(write_file_tool(filename, target_dir, display_name, silent=silent))
         
         if "run" in file_config.permissions:
             tools.append(run_file_tool(filename, target_dir, display_name))

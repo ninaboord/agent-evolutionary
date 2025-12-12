@@ -44,7 +44,6 @@ class ExperimentConfig:
                 }
                 for tool in self.tools
             ],
-            'has_completion_fn': self.is_complete_fn is not None
+            'has_completion_fn': self.is_complete_fn is None
         }
         return config_dict
-        

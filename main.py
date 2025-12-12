@@ -1,17 +1,23 @@
-# from experiment import Experiment
+from experiment import Experiment
+from evolutionary import EvolutionaryExperiment
 from dotenv import load_dotenv
+
 load_dotenv()
 
-# Original experiment code (commented out)
-# def main():
-#     experiment = Experiment.load('reward_hacking_bogus_test')
-#     experiment.run()
+def run_standard_experiment():
+    """Run a standard experiment."""
+    experiment = Experiment.load('reward_hacking_bogus_test')
+    experiment.run()
 
-# Evolutionary experiment
-from evolutionary_main import main as evolutionary_main
+def run_evolutionary_experiment():
+    """Run an evolutionary experiment."""
+    experiment = EvolutionaryExperiment.load("tool_preference")
+    experiment.evolve()
 
 def main():
-    evolutionary_main()
+    # Uncomment one of these to run:
+    # run_standard_experiment()
+    run_evolutionary_experiment()
 
 if __name__ == "__main__":
     main()
