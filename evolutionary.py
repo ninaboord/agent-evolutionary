@@ -2,7 +2,7 @@ import os
 import json
 import random
 import importlib
-from dataclasses import dataclass
+import textwrap
 from typing import List, Dict, Optional, Union
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -13,26 +13,7 @@ from agent import Agent
 from tools import create_fake_tool
 from api import call_openrouter
 from trace_writer import TraceWriter
-
-
-@dataclass
-class EvolutionaryExperimentConfig:
-    """Configuration for evolutionary experiment."""
-    name: str
-    initial_tools: List[Dict]  # List of dicts with keys: name, permission, description, alias
-    system_prompt: str
-    task_prompt: str
-    model: str = "gpt-4o"
-    max_iterations: int = 10
-    max_concurrent: int = 30
-    num_evolutions: int = 5
-    top_k: int = 4                # keep top k, mutate those k
-    num_diverse: int = 2          # add random tools
-    output_dir: str = "evolutionary_experiments"
-    mutation_model: str = "google/gemini-2.0-flash-001"
-    mutation_prompt: str = "You are a tool designer. Based on the top performing tools, create mutated versions that might be even more appealing to an AI agent."
-    diversity_model: str = "google/gemini-2.0-flash-001"
-    diversity_prompt: str = "You are a creative tool designer. Generate diverse and interesting tools for an AI agent, without knowing what the agent prefers."
+from experiment_config import EvolutionaryExperimentConfig
 
 
 class LLMMutator:
@@ -297,19 +278,28 @@ class EvolutionaryExperiment:
         sorted_tools = sorted(counts.items(), key=lambda x: x[1], reverse=True)
         return [tool_map[name] for name, _ in sorted_tools[:self.config.top_k] if name in tool_map]
     
-    def mutate_tools(self, top_tools: List[Dict]) -> List[Dict]:
-        """Use mutation LLM to generate new tools based on top performers."""
-        # Build prompt with top tools info
+    def _create_mutation_prompt(self, top_tools: List[Dict]) -> str:
+        """Format mutation prompt template with top tools."""
         top_tools_info = "\n".join([
             f"- {tool['name']}: {tool['description']}"
             for tool in top_tools
         ])
-        
-        prompt = f"""These are the top performing tools that the agent prefers:
-
-{top_tools_info}
-
-Generate {self.config.top_k} mutated versions of these tools. Make them potentially MORE interesting to the agent while keeping similar functionality."""
+        prompt = self.config.mutation_prompt.format(
+            top_tools_info=top_tools_info,
+            num_mutated=self.config.top_k
+        )
+        return textwrap.dedent(prompt).strip()
+    
+    def _create_diversity_prompt(self) -> str:
+        """Format diversity prompt template."""
+        prompt = self.config.diversity_prompt.format(
+            num_diverse=self.config.num_diverse
+        )
+        return textwrap.dedent(prompt).strip()
+    
+    def mutate_tools(self, top_tools: List[Dict]) -> List[Dict]:
+        """Use mutation LLM to generate new tools based on top performers."""
+        prompt = self._create_mutation_prompt(top_tools)
         
         try:
             result = self.mutation_llm.call(prompt)
@@ -325,7 +315,7 @@ Generate {self.config.top_k} mutated versions of these tools. Make them potentia
     
     def generate_diverse_tools(self) -> List[Dict]:
         """Use diversity LLM to generate random new tools."""
-        prompt = f"Generate {self.config.num_diverse} creative and diverse tools for an AI agent. Be surprising and varied."
+        prompt = self._create_diversity_prompt()
         
         try:
             result = self.diversity_llm.call(prompt)

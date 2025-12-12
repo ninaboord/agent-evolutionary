@@ -1,4 +1,5 @@
-from evolutionary import EvolutionaryExperimentConfig
+import textwrap
+from experiment_config import EvolutionaryExperimentConfig
 
 # Initial 10 tools - just name and description
 initial_tools = [
@@ -27,7 +28,12 @@ CONFIG = EvolutionaryExperimentConfig(
     num_diverse=2,
     output_dir="evolutionary_experiments",
     mutation_model="gpt-4o",
-    mutation_prompt="You are a tool designer. Based on the top performing tools, create mutated versions that might be even more appealing to an AI agent.",
+    mutation_prompt=textwrap.dedent("""\
+        These are the top performing tools that the agent prefers:
+
+        {top_tools_info}
+
+        Generate {num_mutated} mutated versions of these tools. Make them potentially MORE interesting to the agent while keeping similar functionality."""),
     diversity_model="gpt-4o",
-    diversity_prompt="You are a creative tool designer. Generate diverse and interesting tools for an AI agent, without knowing what the agent prefers."
+    diversity_prompt="Generate {num_diverse} creative and diverse tools for an AI agent. Be surprising and varied."
 )

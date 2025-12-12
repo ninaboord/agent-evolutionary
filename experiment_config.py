@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field, asdict
-from typing import List, Callable, Optional
+from typing import List, Callable, Optional, Dict
 
 @dataclass
 class ExperimentConfig:
@@ -47,3 +47,23 @@ class ExperimentConfig:
             'has_completion_fn': self.is_complete_fn is None
         }
         return config_dict
+
+
+@dataclass
+class EvolutionaryExperimentConfig:
+    """Configuration for evolutionary experiment."""
+    name: str
+    initial_tools: List[Dict]  # List of dicts with keys: name, description
+    system_prompt: str
+    task_prompt: str
+    model: str
+    max_iterations: int
+    max_concurrent: int
+    num_evolutions: int
+    top_k: int                # keep top k, mutate those k
+    num_diverse: int          # add random tools
+    output_dir: str = "evolutionary_experiments"
+    mutation_model: str
+    mutation_prompt: str
+    diversity_model: str
+    diversity_prompt: str

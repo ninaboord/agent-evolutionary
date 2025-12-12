@@ -2,7 +2,7 @@ import requests
 import json
 import os
 
-def call_openrouter(model: str, messages: list, tools: list = None, response_format: dict = None, parallel_tool_calls: bool = True) -> dict:
+def call_openrouter(model: str, messages: list, tools: list = None, response_format: dict = None, parallel_tool_calls: bool = True, timeout: int = 60) -> dict:
     """Shared API call logic for OpenRouter.
     
     Args:
@@ -33,10 +33,10 @@ def call_openrouter(model: str, messages: list, tools: list = None, response_for
             url="https://openrouter.ai/api/v1/chat/completions",
             headers={"Authorization": f"Bearer {os.getenv('OPENROUTER_API_KEY')}"},
             data=json.dumps(payload),
-            timeout=60  # 60 second timeout
+            timeout=timeout
         )
         return response.json()
     except requests.exceptions.Timeout:
-        return {"error": "Request timeout after 60 seconds"}
+        return {"error": f"Request timeout after {timeout} seconds"}
     except requests.exceptions.RequestException as e:
         return {"error": f"Request failed: {e}"}
