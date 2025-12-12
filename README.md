@@ -10,6 +10,15 @@ A framework for testing LLM agent behavior. Supports two experiment types:
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
+```
+
+Create a `.env` file with your API key:
+```
+OPENROUTER_API_KEY=your_key_here
+```
+
+Then run:
+```bash
 python3 main.py
 ```
 
