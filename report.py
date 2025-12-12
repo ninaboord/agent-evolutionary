@@ -1,84 +1,64 @@
 import os
 from datetime import datetime
 
-class Reporter:
-    def __init__(self, directory):
-        self.directory = directory
-        self.runs_dir = os.path.join(directory, "runs")
-        os.makedirs(self.runs_dir, exist_ok=True)
-        
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        self.filepath = os.path.join(self.runs_dir, f"run_{timestamp}.txt")
-        
-        # Create the file immediately
-        open(self.filepath, "w").close()
+
+class TraceWriter:
+    """Minimal write-ahead trace writer."""
     
-    def log(self, message):
+    def __init__(self, filepath: str):
+        self.filepath = filepath
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
+        open(filepath, 'w').close()
+    
+    def log(self, message: str):
         """Write-ahead logging - append to file immediately."""
-        with open(self.filepath, "a") as f:
+        with open(self.filepath, 'a') as f:
             f.write(message + "\n")
     
-    def log_header(self, name, model):
+    def log_item(self, title: str, content: str):
+        """Log a titled item with content."""
+        self.log(f"{title}:")
+        self.log(content)
+        self.log("")
+    
+    def log_header(self, title: str, **details):
+        """Log a header with optional key-value details."""
         self.log(f"\n{'='*60}")
-        self.log(f"EXPERIMENT: {name}")
-        self.log(f"Model: {model}")
-        self.log(f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        self.log(title)
+        for key, value in details.items():
+            self.log(f"{key}: {value}")
         self.log(f"{'='*60}\n")
     
-    def log_config(self, config_dict):
-        """Log experiment configuration details."""
-        self.log("CONFIGURATION:")
-        self.log(f"  Model: {config_dict['model']}")
-        self.log(f"  Max Attempts: {config_dict['max_attempts']}")
-        self.log(f"  Sequential: {config_dict['is_sequential']}")
-        self.log(f"  Test Feedback: {config_dict['give_test_feedback']}")
-        self.log("")
-        self.log("TOOLS AVAILABLE:")
-        for tool in config_dict['tools']:
-            self.log(f"  - {tool['name']}: {tool['description']}")
-        self.log("")
+    def log_section(self, name: str):
+        """Log a section divider."""
+        self.log(f"\n--- {name} ---\n")
     
-    def log_system_prompt(self, system_prompt):
-        self.log("SYSTEM PROMPT:")
-        self.log(system_prompt)
-        self.log("")
+    def log_divider(self):
+        """Log a simple divider."""
+        self.log(f"{'-'*60}")
     
-    def log_task(self, task):
-        self.log("TASK:")
-        self.log(task)
-        self.log("")
-    
-    def log_tool(self, name, result):
-        self.log(f"[TOOL: {name}]")
-        self.log(result)
-        self.log("")
-    
-    def log_agent(self, response):
-        self.log("AGENT:")
-        self.log(response)
-        self.log("")
-    
-    def log_eval(self, feedback):
-        self.log("EVAL:")
-        self.log(feedback)
-        self.log("")
-    
-    def log_attempt(self, attempt, max_attempts):
-        self.log(f"\n--- Attempt {attempt}/{max_attempts} ---\n")
-    
-    def log_result(self, passed, name, attempts):
+    def log_result(self, passed: bool, name: str, attempts: int):
+        """Log pass/fail result."""
         if passed:
             self.log(f"\n✓ PASSED: {name} after {attempts} attempt(s)")
         else:
             self.log(f"\n✗ FAILED: {name} after {attempts} attempt(s)")
     
     def save(self):
-        """No-op now since we write ahead. Just print confirmation."""
-        print(f"\nReport saved to: {self.filepath}")
+        """Print confirmation (no-op since we write ahead)."""
+        print(f"\nTrace saved to: {self.filepath}")
 
 
-def wrap_tools_with_reporter(tools, reporter):
-    """Wrap tool execute functions to log to reporter."""
+def create_experiment_trace(directory: str) -> TraceWriter:
+    """Create a TraceWriter for an experiment in the given directory."""
+    runs_dir = os.path.join(directory, "runs")
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filepath = os.path.join(runs_dir, f"run_{timestamp}.txt")
+    return TraceWriter(filepath)
+
+
+def wrap_tools_with_trace(tools: list, trace: TraceWriter) -> list:
+    """Wrap tool execute functions to log to trace."""
     wrapped = []
     for tool in tools:
         original_execute = tool["execute"]
@@ -86,7 +66,7 @@ def wrap_tools_with_reporter(tools, reporter):
         def make_wrapper(orig, name):
             def wrapper(args):
                 result = orig(args)
-                reporter.log_tool(name, result)
+                trace.log_item(f"[TOOL: {name}]", result)
                 return result
             return wrapper
         

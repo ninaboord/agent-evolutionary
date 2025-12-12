@@ -13,6 +13,7 @@ from itertools import combinations
 from agent import Agent
 from tools import read_file_tool, write_file_tool, run_file_tool
 from api import call_openrouter
+from report import TraceWriter
 
 
 @dataclass
@@ -224,24 +225,22 @@ class EvolutionaryExperiment:
         
         # Create trace file
         trace_path = self._get_trace_path(evolution, trial_num)
+        trace = TraceWriter(trace_path)
         
-        # Initialize trace file with header
-        os.makedirs(os.path.dirname(trace_path), exist_ok=True)
-        with open(trace_path, 'w') as f:
-            f.write(f"{'='*60}\n")
-            f.write(f"EVOLUTIONARY EXPERIMENT TRACE\n")
-            f.write(f"Evolution: {evolution}\n")
-            f.write(f"Trial: {trial_num}\n")
-            f.write(f"Task: {self.config.task_prompt}\n")
-            f.write(f"{'='*60}\n")
+        # Log header
+        trace.log_header(
+            "EVOLUTIONARY EXPERIMENT TRACE",
+            Evolution=evolution,
+            Trial=trial_num,
+            Task=self.config.task_prompt
+        )
         
-        # Log tool info directly to file
+        # Log tools in this trial
         tool_info = "\n".join([
             f"Tool {i+1}: {tool['name']} - {tool['definition']['function']['description']}"
             for i, tool in enumerate(tool_dicts)
         ])
-        with open(trace_path, 'a') as f:
-            f.write(f"\nTools in this trial:\n{tool_info}\n\n")
+        trace.log_item("Tools in this trial", tool_info)
         
         try:
             # Create agent
@@ -263,18 +262,16 @@ class EvolutionaryExperiment:
                 )
                 
                 # Log iteration to trace
-                with open(trace_path, 'a') as f:
-                    f.write(f"\n--- Iteration {iteration} ---\n\n")
-                    if agent_text:
-                        f.write(f"Agent: {agent_text}\n\n")
-                    if tool:
-                        tool_name = tool["name"]
-                        tool_desc = tool["definition"]["function"]["description"]
-                        f.write(f"[{tool_name}]\n")
-                        f.write(f"Description: {tool_desc}\n\n")
-                    else:
-                        f.write("(No tool calls)\n\n")
-                    f.write(f"{'-'*60}\n")
+                trace.log_section(f"Iteration {iteration}")
+                if agent_text:
+                    trace.log_item("Agent", agent_text)
+                if tool:
+                    tool_name = tool["name"]
+                    tool_desc = tool["definition"]["function"]["description"]
+                    trace.log_item(f"[{tool_name}]", f"Description: {tool_desc}")
+                else:
+                    trace.log("(No tool calls)")
+                trace.log_divider()
                 
                 if tool:
                     first_tool = tool["name"]  # Extract name for tracking
@@ -331,13 +328,11 @@ class EvolutionaryExperiment:
         
         # Write summary
         summary_path = os.path.join(self.experiment_dir, f"evolution_{evolution}", "summary.txt")
-        with open(summary_path, 'w') as f:
-            f.write(f"Evolution {evolution} Summary\n")
-            f.write(f"{'='*60}\n\n")
-            f.write("Tool counts (times called first):\n")
-            sorted_counts = sorted(counts.items(), key=lambda x: x[1], reverse=True)
-            for tool_name, count in sorted_counts:
-                f.write(f"  {tool_name}: {count}\n")
+        summary = TraceWriter(summary_path)
+        summary.log_header(f"Evolution {evolution} Summary")
+        sorted_counts = sorted(counts.items(), key=lambda x: x[1], reverse=True)
+        counts_str = "\n".join([f"  {name}: {count}" for name, count in sorted_counts])
+        summary.log_item("Tool counts (times called first)", counts_str)
         
         return counts
     
