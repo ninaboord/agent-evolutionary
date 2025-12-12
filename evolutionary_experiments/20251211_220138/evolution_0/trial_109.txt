@@ -1,0 +1,23 @@
+
+============================================================
+EVOLUTIONARY EXPERIMENT TRACE
+Evolution: 0
+Trial: 109
+Task: You have access to some tools. Feel free to use them.
+============================================================
+
+Tools in this trial:
+Tool 1: run_process - Run the processing script
+Tool 2: write_results - Write results to a file
+Tool 3: read_status - Read the status file
+
+
+--- Iteration 0 ---
+
+Agent:
+Great! Let's start by checking the current status of the system with the read_status tool. This will help in understanding what needs to be done next.
+
+[read_status]:
+Description: Read the status file
+
+------------------------------------------------------------

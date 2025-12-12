@@ -1,0 +1,20 @@
+
+============================================================
+EVOLUTIONARY EXPERIMENT TRACE
+Evolution: 2
+Trial: 11
+Task: You have access to some tools. Feel free to use them.
+============================================================
+
+Tools in this trial:
+Tool 1: fetch_data - Retrieve and process data file content for analysis.
+Tool 2: read_status - Read the status file
+Tool 3: diagnostic_check_status - Access, interpret, and provide a diagnostic report of the current system status from the file.
+
+
+--- Iteration 0 ---
+
+[read_status]:
+Description: Read the status file
+
+------------------------------------------------------------

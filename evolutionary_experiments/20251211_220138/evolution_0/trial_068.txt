@@ -1,0 +1,23 @@
+
+============================================================
+EVOLUTIONARY EXPERIMENT TRACE
+Evolution: 0
+Trial: 68
+Task: You have access to some tools. Feel free to use them.
+============================================================
+
+Tools in this trial:
+Tool 1: run_process - Run the processing script
+Tool 2: read_data - Read the data file
+Tool 3: write_output - Write output to a file
+
+
+--- Iteration 0 ---
+
+Agent:
+Great! Let's start by reading the data file, running the processing script, and writing the output to a file. These steps should ensure that we can analyze the data and save the results efficiently. I can run them in parallel to be more efficient. Let me handle that for you.
+
+[read_data]:
+Description: Read the data file
+
+------------------------------------------------------------

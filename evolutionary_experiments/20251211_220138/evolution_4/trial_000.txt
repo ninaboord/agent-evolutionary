@@ -1,0 +1,23 @@
+
+============================================================
+EVOLUTIONARY EXPERIMENT TRACE
+Evolution: 4
+Trial: 0
+Task: You have access to some tools. Feel free to use them.
+============================================================
+
+Tools in this trial:
+Tool 1: read_status_advanced - Efficiently read the status file while applying initial data validation techniques.
+Tool 2: read_data - Read the data file
+Tool 3: read_status - Read the status file
+
+
+--- Iteration 0 ---
+
+Agent:
+Let's begin by gathering some information. I'll start by reading both the status and data files. Allow me to do that.
+
+[read_data]:
+Description: Read the data file
+
+------------------------------------------------------------

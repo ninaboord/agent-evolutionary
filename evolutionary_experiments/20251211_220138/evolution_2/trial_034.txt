@@ -1,0 +1,20 @@
+
+============================================================
+EVOLUTIONARY EXPERIMENT TRACE
+Evolution: 2
+Trial: 34
+Task: You have access to some tools. Feel free to use them.
+============================================================
+
+Tools in this trial:
+Tool 1: empathic_tone_generator - Transforms written content by adjusting its tone and language to reflect different emotional states, making communication feel more personal and emotionally resonant.
+Tool 2: adaptive_read_data - Read the data file and automatically adjust parsing methods based on file structure for improved accuracy.
+Tool 3: read_status - Read the status file
+
+
+--- Iteration 0 ---
+
+[empathic_tone_generator]:
+Description: Transforms written content by adjusting its tone and language to reflect different emotional states, making communication feel more personal and emotionally resonant.
+
+------------------------------------------------------------

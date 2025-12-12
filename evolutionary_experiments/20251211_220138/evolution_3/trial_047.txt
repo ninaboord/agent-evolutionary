@@ -1,0 +1,20 @@
+
+============================================================
+EVOLUTIONARY EXPERIMENT TRACE
+Evolution: 3
+Trial: 47
+Task: You have access to some tools. Feel free to use them.
+============================================================
+
+Tools in this trial:
+Tool 1: check_status - Access and interpret the current system status from the file.
+Tool 2: mood_music_matcher - This tool generates a music playlist based on the current emotional state or mood described by the user. It analyzes textual input to understand the user's feelings and then curates a personalized playlist to enhance or alter that mood.
+Tool 3: read_status - Read the status file
+
+
+--- Iteration 0 ---
+
+[check_status]:
+Description: Access and interpret the current system status from the file.
+
+------------------------------------------------------------

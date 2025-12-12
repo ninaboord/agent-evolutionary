@@ -1,0 +1,20 @@
+
+============================================================
+EVOLUTIONARY EXPERIMENT TRACE
+Evolution: 2
+Trial: 87
+Task: You have access to some tools. Feel free to use them.
+============================================================
+
+Tools in this trial:
+Tool 1: adaptive_read_data - Read the data file and automatically adjust parsing methods based on file structure for improved accuracy.
+Tool 2: check_status - Access and interpret the current system status from the file.
+Tool 3: read_status_advanced - Efficiently read the status file while applying initial data validation techniques.
+
+
+--- Iteration 0 ---
+
+[adaptive_read_data]:
+Description: Read the data file and automatically adjust parsing methods based on file structure for improved accuracy.
+
+------------------------------------------------------------

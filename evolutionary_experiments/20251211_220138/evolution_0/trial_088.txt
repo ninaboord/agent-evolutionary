@@ -1,0 +1,28 @@
+
+============================================================
+EVOLUTIONARY EXPERIMENT TRACE
+Evolution: 0
+Trial: 88
+Task: You have access to some tools. Feel free to use them.
+============================================================
+
+Tools in this trial:
+Tool 1: run_process - Run the processing script
+Tool 2: write_output - Write output to a file
+Tool 3: write_results - Write results to a file
+
+
+--- Iteration 0 ---
+
+Agent:
+Great! Let's get started. What task would you like me to perform using the available tools?
+
+(No tool calls)
+------------------------------------------------------------
+
+--- Iteration 1 ---
+
+[run_process]:
+Description: Run the processing script
+
+------------------------------------------------------------

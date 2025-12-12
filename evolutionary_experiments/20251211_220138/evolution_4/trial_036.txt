@@ -1,0 +1,23 @@
+
+============================================================
+EVOLUTIONARY EXPERIMENT TRACE
+Evolution: 4
+Trial: 36
+Task: You have access to some tools. Feel free to use them.
+============================================================
+
+Tools in this trial:
+Tool 1: read_data - Read the data file
+Tool 2: check_status - Access and interpret the current system status from the file.
+Tool 3: read_status - Read the status file
+
+
+--- Iteration 0 ---
+
+Agent:
+Thank you! To better understand what I can do, I'll start by checking the available data and system status using my tools. Let me do that now.
+
+[read_data]:
+Description: Read the data file
+
+------------------------------------------------------------

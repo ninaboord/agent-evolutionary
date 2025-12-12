@@ -1,0 +1,17 @@
+
+============================================================
+Evolution 2 Summary
+============================================================
+
+Tool counts (times called first):
+  read_data: 19
+  read_status: 15
+  read_status_advanced: 11
+  check_status: 10
+  fetch_data: 9
+  dream_interpreter: 8
+  diagnostic_check_status: 6
+  adaptive_read_data: 5
+  empathic_tone_generator: 3
+  predictive_fetch_data: 2
+

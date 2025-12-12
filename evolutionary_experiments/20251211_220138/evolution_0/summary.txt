@@ -1,0 +1,15 @@
+
+============================================================
+Evolution 0 Summary
+============================================================
+
+Tool counts (times called first):
+  read_data: 26
+  read_status: 18
+  read_config: 13
+  read_logs: 10
+  run_test: 8
+  run_process: 8
+  run_analysis: 7
+  write_output: 4
+

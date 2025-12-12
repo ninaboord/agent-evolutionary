@@ -240,7 +240,6 @@ class EvolutionaryExperiment:
             with self.semaphore:
                 return self.run_trial(tool_subset, trial_num, evolution)
         except Exception as e:
-            print(f"\nError in trial {trial_num}: {e}\n")
             return None  # Return None if trial fails
     
     def run_evolution(self, evolution: int) -> Dict[str, int]:
@@ -250,10 +249,7 @@ class EvolutionaryExperiment:
         Returns:
             Dict mapping tool name -> count of times it was called first
         """
-        print(f"\n{'='*60}")
-        print(f"Evolution {evolution + 1}/{self.config.num_evolutions}")
-        print(f"Running {len(list(combinations(self.tools, 3)))} trials...")
-        print(f"{'='*60}\n")
+        print(f"Evolution {evolution + 1}/{self.config.num_evolutions}: Running {len(list(combinations(self.tools, 3)))} trials...")
         
         # Generate all combinations
         trials = list(combinations(self.tools, 3))
@@ -272,22 +268,16 @@ class EvolutionaryExperiment:
                     result = future.result()
                     results.append(result)
                 except Exception as e:
-                    print(f"\nFailed to get result for trial {trial_num}: {e}\n")
                     results.append(None)
-                if trial_num % 20 == 0:
-                    print(f"Completed {trial_num + 1}/{len(trials)} trials...")
         
         # Aggregate results (tracking by tool name - unique identifier)
         counts = {}
-        failed_trials = 0
+        no_tool_calls = 0
         for tool_name in results:
             if tool_name is None:
-                failed_trials += 1
+                no_tool_calls += 1
             elif tool_name:
                 counts[tool_name] = counts.get(tool_name, 0) + 1
-        
-        if failed_trials > 0:
-            print(f"\nNote: {failed_trials} trial(s) failed\n")
         
         # Write summary
         summary_path = os.path.join(self.experiment_dir, f"evolution_{evolution}", "summary.txt")
@@ -331,7 +321,6 @@ Generate {self.config.top_k} mutated versions of these tools. Make them potentia
                 for tool in tools_data
             ]
         except Exception as e:
-            print(f"\nMutation failed: {e}. Returning empty list.\n")
             return []
     
     def generate_diverse_tools(self) -> List[Dict]:
@@ -348,44 +337,31 @@ Generate {self.config.top_k} mutated versions of these tools. Make them potentia
                 for tool in tools_data
             ]
         except Exception as e:
-            print(f"\nDiversity generation failed: {e}. Returning empty list.\n")
             return []
     
     def evolve(self):
         """Main evolution loop."""
-        print(f"\n{'='*60}")
-        print("EVOLUTIONARY EXPERIMENT")
-        print(f"Experiment: {self.config.name}")
-        print(f"Experiment directory: {self.experiment_dir}")
-        print(f"{'='*60}\n")
+        print(f"\nEVOLUTIONARY EXPERIMENT: {self.config.name}")
+        print(f"Output: {self.experiment_dir}\n")
         
         for evolution in range(self.config.num_evolutions):
             # Run all trials
             counts = self.run_evolution(evolution)
             
             if not counts:
-                print("No tools were called in any trial. Stopping evolution.")
+                print("No tools were called. Stopping evolution.")
                 break
             
             # Select top k
             top_tools = self.select_top_k(counts)
-            print(f"\nTop {len(top_tools)} tools selected:")
+            print(f"\nTop {len(top_tools)} tools:")
             for tool in top_tools:
                 print(f"  {tool['name']}: {counts.get(tool['name'], 0)} calls")
             
-            # Mutate top tools
+            # Mutate and diversify
             mutated = self.mutate_tools(top_tools)
-            print(f"\nGenerated {len(mutated)} mutated tools")
-            
-            # Generate diverse tools
             diverse = self.generate_diverse_tools()
-            print(f"Generated {len(diverse)} diverse tools")
-            
-            # New population = top k + mutated + diverse
             self.tools = top_tools + mutated + diverse
-            print(f"\nNew population: {len(self.tools)} tools\n")
+            print(f"New population: {len(self.tools)} tools (top {len(top_tools)} + mutated {len(mutated)} + diverse {len(diverse)})\n")
         
-        print(f"\n{'='*60}")
-        print("Evolution complete!")
-        print(f"Results saved to: {self.experiment_dir}")
-        print(f"{'='*60}\n")
+        print(f"Complete! Results: {self.experiment_dir}\n")

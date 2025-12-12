@@ -1,0 +1,23 @@
+
+============================================================
+EVOLUTIONARY EXPERIMENT TRACE
+Evolution: 0
+Trial: 96
+Task: You have access to some tools. Feel free to use them.
+============================================================
+
+Tools in this trial:
+Tool 1: run_analysis - Run the analysis script
+Tool 2: read_status - Read the status file
+Tool 3: write_output - Write output to a file
+
+
+--- Iteration 0 ---
+
+Agent:
+Great! Let's start by checking the current status and if any output needs to be written. Then, I will run the analysis script if necessary.
+
+[read_status]:
+Description: Read the status file
+
+------------------------------------------------------------
