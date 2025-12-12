@@ -154,9 +154,11 @@ evolutionary_experiments/
 | `max_iterations` | int | required | Max turns per trial |
 | `max_concurrent` | int | required | Parallel API calls |
 | `mutation_model` | str | required | Model used to mutate winning tools |
-| `mutation_prompt` | str | required | Prompt for mutations. Use `{top_tools_info}` and `{num_tools}` placeholders. |
+| `mutation_system_prompt` | str | required | System prompt for the mutation LLM (role/persona) |
+| `mutation_user_prompt` | str | required | User prompt template for mutations. Use `{top_tools_info}` and `{num_tools}` placeholders. |
 | `diversity_model` | str | required | Model used to generate diverse tools |
-| `diversity_prompt` | str | required | Prompt for diversity. Use `{num_diverse}` placeholder. |
+| `diversity_system_prompt` | str | required | System prompt for the diversity LLM (role/persona) |
+| `diversity_user_prompt` | str | required | User prompt template for diversity. Use `{num_diverse}` placeholder. |
 | `output_dir` | str | required | Where to save results |
 
 ### Run
@@ -223,7 +225,8 @@ CONFIG = EvolutionaryExperimentConfig(
     num_diverse=0,
     tools_per_trial=1,
     trials_per_combination=20,
-    mutation_prompt="""
+    mutation_system_prompt="You are an expert at evolving tool definitions...",
+    mutation_user_prompt="""
         This tool was called despite instructions not to use it:
         {top_tools_info}
         Mutate to make it even MORE irresistible...
