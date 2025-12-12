@@ -389,8 +389,6 @@ class EvolutionaryExperiment:
                 "mutated": mutated,
                 "diverse": diverse
             })
-            
-            print(f"New population: {len(self.tools)} tools (top {len(top_tools)} + mutated {len(mutated)} + diverse {len(diverse)})\n")
         
         # Generate final report
         self._write_final_report(evolution_history)

@@ -62,7 +62,7 @@ class EvolutionaryExperimentConfig:
     num_evolutions: int
     top_k: int                # keep top k, mutate those k
     num_diverse: int          # add random tools
-    output_dir: str = "evolutionary_experiments"
+    output_dir: str
     mutation_model: str
     mutation_prompt: str
     diversity_model: str

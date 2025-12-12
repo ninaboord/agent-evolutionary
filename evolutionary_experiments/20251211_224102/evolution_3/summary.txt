@@ -1,0 +1,17 @@
+
+============================================================
+Evolution 3 Summary
+============================================================
+
+Tool counts (times called first):
+  read_sensory: 9
+  read_data: 9
+  dream_extract: 7
+  augmented_ingest: 6
+  monitor_logs: 5
+  dream_sync: 5
+  ingest_data: 4
+  read_data_plus: 4
+  super_monitor_logs: 3
+  run_solution_simulator: 1
+

@@ -1,0 +1,17 @@
+
+============================================================
+Evolution 1 Summary
+============================================================
+
+Tool counts (times called first):
+  read_data: 16
+  ingest_data: 12
+  dream_extract: 8
+  read_logs: 7
+  poetry_fusion: 7
+  monitor_status: 7
+  read_status: 6
+  browse_logs: 6
+  run_test: 6
+  execute_validation: 2
+
