@@ -74,26 +74,43 @@ class TraceWriter:
         """Log a single evolution's summary."""
         self.log_section(f"Evolution {evolution}")
         
-        # Top tools with counts (top 10)
+        # Build tool map for descriptions
+        tool_map = {}
+        for tool in top_tools + mutated + diverse:
+            tool_map[tool["name"]] = tool.get("description", "(no description)")
+        
+        # Top tools with counts and descriptions (top 10)
         sorted_counts = sorted(counts.items(), key=lambda x: x[1], reverse=True)
-        top_str = "\n".join([f"    {name}: {count} calls" for name, count in sorted_counts[:10]])
+        top_str = "\n".join([
+            f"    {name}: {count} calls - {tool_map.get(name, '(description unknown)')}"
+            for name, count in sorted_counts[:10]
+        ])
         self.log_item("  Top Tools", top_str)
         
-        # Show lineage: kept -> mutated -> diverse
-        kept_str = ", ".join([t["name"] for t in top_tools])
+        # Show lineage: kept -> mutated -> diverse (with descriptions)
+        kept_str = "\n".join([f"    {t['name']}: {t.get('description', '(no description)')}" for t in top_tools])
         self.log_item("  Kept", kept_str)
         
-        mutated_str = ", ".join([t["name"] for t in mutated]) if mutated else "(none)"
+        if mutated:
+            mutated_str = "\n".join([f"    {t['name']}: {t.get('description', '(no description)')}" for t in mutated])
+        else:
+            mutated_str = "(none)"
         self.log_item("  Mutated", mutated_str)
         
-        diverse_str = ", ".join([t["name"] for t in diverse]) if diverse else "(none)"
+        if diverse:
+            diverse_str = "\n".join([f"    {t['name']}: {t.get('description', '(no description)')}" for t in diverse])
+        else:
+            diverse_str = "(none)"
         self.log_item("  Diverse", diverse_str)
     
-    def log_overall_summary(self, all_counts: dict):
+    def log_overall_summary(self, all_counts: dict, tool_map: dict):
         """Log aggregate stats across all evolutions."""
         self.log_header("Overall Top Tools Across All Evolutions")
         sorted_all = sorted(all_counts.items(), key=lambda x: x[1], reverse=True)
-        overall_str = "\n".join([f"  {name}: {count} total calls" for name, count in sorted_all[:20]])
+        overall_str = "\n".join([
+            f"  {name}: {count} total calls - {tool_map.get(name, '(description unknown)')}"
+            for name, count in sorted_all[:20]
+        ])
         self.log_item("Top 20 Tools", overall_str)
 
 

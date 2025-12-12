@@ -349,10 +349,16 @@ class EvolutionaryExperiment:
         
         # 3. Overall aggregate
         all_counts = {}
+        tool_map = {}  # Map tool name -> description (latest seen)
         for evo_data in evolution_history:
             for name, count in evo_data["counts"].items():
                 all_counts[name] = all_counts.get(name, 0) + count
-        writer.log_overall_summary(all_counts)
+            
+            # Track tool descriptions (prefer later evolutions if name appears multiple times)
+            for tool in evo_data["top_tools"] + evo_data["mutated"] + evo_data["diverse"]:
+                tool_map[tool["name"]] = tool.get("description", "(no description)")
+        
+        writer.log_overall_summary(all_counts, tool_map)
     
     def evolve(self):
         """Main evolution loop."""
