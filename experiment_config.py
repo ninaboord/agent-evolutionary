@@ -66,6 +66,8 @@ class EvolutionaryExperimentConfig:
     trials_per_combination: int  # number of times to run each tool combination
     output_dir: str
     mutation_model: str
-    mutation_prompt: str
+    mutation_system_prompt: str
+    mutation_user_prompt: str
     diversity_model: str
-    diversity_prompt: str
+    diversity_system_prompt: str 
+    diversity_user_prompt: str

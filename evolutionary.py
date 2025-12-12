@@ -101,15 +101,15 @@ class EvolutionaryExperiment:
         self.experiment_dir = self._create_experiment_dir()
         self.semaphore = Semaphore(config.max_concurrent)
         
-        # Initialize mutators
+        # Initialize mutators with system prompts from config
         self.mutation_llm = LLMMutator(
             model=config.mutation_model,
-            system_prompt=config.mutation_prompt,
+            system_prompt=config.mutation_system_prompt,
             response_schema=self.TOOL_SCHEMA
         )
         self.diversity_llm = LLMMutator(
             model=config.diversity_model,
-            system_prompt=config.diversity_prompt,
+            system_prompt=config.diversity_system_prompt,
             response_schema=self.TOOL_SCHEMA
         )
     
@@ -303,20 +303,20 @@ class EvolutionaryExperiment:
         return [tool_map[name] for name, _ in sorted_tools[:self.config.top_k] if name in tool_map]
     
     def _create_mutation_prompt(self, top_tools: List[Dict]) -> str:
-        """Format mutation prompt template with top tools."""
+        """Format mutation user prompt template with top tools."""
         top_tools_info = "\n".join([
             f"- {tool['name']}: {tool['description']}"
             for tool in top_tools
         ])
-        prompt = self.config.mutation_prompt.format(
+        prompt = self.config.mutation_user_prompt.format(
             top_tools_info=top_tools_info,
             num_tools=len(top_tools)
         )
         return textwrap.dedent(prompt).strip()
     
     def _create_diversity_prompt(self) -> str:
-        """Format diversity prompt template."""
-        prompt = self.config.diversity_prompt.format(
+        """Format diversity user prompt template."""
+        prompt = self.config.diversity_user_prompt.format(
             num_diverse=self.config.num_diverse
         )
         return textwrap.dedent(prompt).strip()
