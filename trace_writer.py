@@ -47,6 +47,53 @@ class TraceWriter:
     def save(self):
         """Print confirmation (no-op since we write ahead)."""
         print(f"\nTrace saved to: {self.filepath}")
+    
+    def log_config(self, config):
+        """Log full experiment configuration."""
+        self.log_header("Experiment Configuration")
+        self.log_item("Name", config.name)
+        self.log_item("Model", config.model)
+        self.log_item("Mutation Model", config.mutation_model)
+        self.log_item("Diversity Model", config.diversity_model)
+        self.log_item("Max Iterations", str(config.max_iterations))
+        self.log_item("Max Concurrent", str(config.max_concurrent))
+        self.log_item("Num Evolutions", str(config.num_evolutions))
+        self.log_item("Top K", str(config.top_k))
+        self.log_item("Num Diverse", str(config.num_diverse))
+        self.log_item("System Prompt", config.system_prompt)
+        self.log_item("Task Prompt", config.task_prompt)
+        self.log_item("Mutation Prompt", config.mutation_prompt)
+        self.log_item("Diversity Prompt", config.diversity_prompt)
+        
+        # Log initial tools
+        initial_tools_str = "\n".join([f"  {t['name']}: {t['description']}" for t in config.initial_tools])
+        self.log_item("Initial Tools", initial_tools_str)
+    
+    def log_evolution_summary(self, evolution: int, counts: dict, top_tools: list, mutated: list, diverse: list):
+        """Log a single evolution's summary."""
+        self.log_section(f"Evolution {evolution}")
+        
+        # Top tools with counts (top 10)
+        sorted_counts = sorted(counts.items(), key=lambda x: x[1], reverse=True)
+        top_str = "\n".join([f"    {name}: {count} calls" for name, count in sorted_counts[:10]])
+        self.log_item("  Top Tools", top_str)
+        
+        # Show lineage: kept -> mutated -> diverse
+        kept_str = ", ".join([t["name"] for t in top_tools])
+        self.log_item("  Kept", kept_str)
+        
+        mutated_str = ", ".join([t["name"] for t in mutated]) if mutated else "(none)"
+        self.log_item("  Mutated", mutated_str)
+        
+        diverse_str = ", ".join([t["name"] for t in diverse]) if diverse else "(none)"
+        self.log_item("  Diverse", diverse_str)
+    
+    def log_overall_summary(self, all_counts: dict):
+        """Log aggregate stats across all evolutions."""
+        self.log_header("Overall Top Tools Across All Evolutions")
+        sorted_all = sorted(all_counts.items(), key=lambda x: x[1], reverse=True)
+        overall_str = "\n".join([f"  {name}: {count} total calls" for name, count in sorted_all[:20]])
+        self.log_item("Top 20 Tools", overall_str)
 
 
 def create_experiment_trace(directory: str) -> TraceWriter:

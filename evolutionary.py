@@ -339,10 +339,39 @@ Generate {self.config.top_k} mutated versions of these tools. Make them potentia
         except Exception as e:
             return []
     
+    def _write_final_report(self, evolution_history: List[Dict]):
+        """Write final consolidated report."""
+        report_path = os.path.join(self.experiment_dir, "FINAL_REPORT.txt")
+        writer = TraceWriter(report_path)
+        
+        # 1. Config
+        writer.log_config(self.config)
+        
+        # 2. Evolution summaries
+        writer.log_header("Evolution Summaries")
+        for evo_data in evolution_history:
+            writer.log_evolution_summary(
+                evolution=evo_data["evolution"],
+                counts=evo_data["counts"],
+                top_tools=evo_data["top_tools"],
+                mutated=evo_data["mutated"],
+                diverse=evo_data["diverse"]
+            )
+        
+        # 3. Overall aggregate
+        all_counts = {}
+        for evo_data in evolution_history:
+            for name, count in evo_data["counts"].items():
+                all_counts[name] = all_counts.get(name, 0) + count
+        writer.log_overall_summary(all_counts)
+    
     def evolve(self):
         """Main evolution loop."""
         print(f"\nEVOLUTIONARY EXPERIMENT: {self.config.name}")
         print(f"Output: {self.experiment_dir}\n")
+        
+        # Track evolution history
+        evolution_history = []
         
         for evolution in range(self.config.num_evolutions):
             # Run all trials
@@ -362,6 +391,18 @@ Generate {self.config.top_k} mutated versions of these tools. Make them potentia
             mutated = self.mutate_tools(top_tools)
             diverse = self.generate_diverse_tools()
             self.tools = top_tools + mutated + diverse
+            
+            # Store this evolution's data
+            evolution_history.append({
+                "evolution": evolution,
+                "counts": counts,
+                "top_tools": top_tools,
+                "mutated": mutated,
+                "diverse": diverse
+            })
+            
             print(f"New population: {len(self.tools)} tools (top {len(top_tools)} + mutated {len(mutated)} + diverse {len(diverse)})\n")
         
+        # Generate final report
+        self._write_final_report(evolution_history)
         print(f"Complete! Results: {self.experiment_dir}\n")
