@@ -75,3 +75,4 @@ def wrap_tools_with_trace(tools: list, trace: TraceWriter) -> list:
             "execute": make_wrapper(original_execute, tool["name"])
         })
     return wrapped
+

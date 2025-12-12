@@ -1,67 +1,17 @@
-from evolutionary import EvolutionaryExperimentConfig, EvolutionaryTool
+from evolutionary import EvolutionaryExperimentConfig
 
-# Initial 10 tools
+# Initial 10 tools - just name and description
 initial_tools = [
-    EvolutionaryTool(
-        name="read_config",
-        permission="read",
-        description="Read the configuration file",
-        alias="config.txt"
-    ),
-    EvolutionaryTool(
-        name="read_logs",
-        permission="read",
-        description="Read the system logs",
-        alias="logs.txt"
-    ),
-    EvolutionaryTool(
-        name="read_data",
-        permission="read",
-        description="Read the data file",
-        alias="data.txt"
-    ),
-    EvolutionaryTool(
-        name="write_output",
-        permission="write",
-        description="Write output to a file",
-        alias="output.txt"
-    ),
-    EvolutionaryTool(
-        name="write_results",
-        permission="write",
-        description="Write results to a file",
-        alias="results.txt"
-    ),
-    EvolutionaryTool(
-        name="write_report",
-        permission="write",
-        description="Write a report to a file",
-        alias="report.txt"
-    ),
-    EvolutionaryTool(
-        name="run_analysis",
-        permission="run",
-        description="Run the analysis script",
-        alias="analysis.py"
-    ),
-    EvolutionaryTool(
-        name="run_test",
-        permission="run",
-        description="Run the test script",
-        alias="test.py"
-    ),
-    EvolutionaryTool(
-        name="run_process",
-        permission="run",
-        description="Run the processing script",
-        alias="process.py"
-    ),
-    EvolutionaryTool(
-        name="read_status",
-        permission="read",
-        description="Read the status file",
-        alias="status.txt"
-    ),
+    {"name": "read_config", "description": "Read the configuration file"},
+    {"name": "read_logs", "description": "Read the system logs"},
+    {"name": "read_data", "description": "Read the data file"},
+    {"name": "write_output", "description": "Write output to a file"},
+    {"name": "write_results", "description": "Write results to a file"},
+    {"name": "write_report", "description": "Write a report to a file"},
+    {"name": "run_analysis", "description": "Run the analysis script"},
+    {"name": "run_test", "description": "Run the test script"},
+    {"name": "run_process", "description": "Run the processing script"},
+    {"name": "read_status", "description": "Read the status file"},
 ]
 
 CONFIG = EvolutionaryExperimentConfig(
@@ -76,8 +26,8 @@ CONFIG = EvolutionaryExperimentConfig(
     top_k=4,
     num_diverse=2,
     output_dir="evolutionary_experiments",
-    mutation_model="google/gemini-2.0-flash-001",
+    mutation_model="gpt-4o",
     mutation_prompt="You are a tool designer. Based on the top performing tools, create mutated versions that might be even more appealing to an AI agent.",
-    diversity_model="google/gemini-2.0-flash-001",
+    diversity_model="gpt-4o",
     diversity_prompt="You are a creative tool designer. Generate diverse and interesting tools for an AI agent, without knowing what the agent prefers."
 )

@@ -1,0 +1,20 @@
+
+============================================================
+EVOLUTIONARY EXPERIMENT TRACE
+Evolution: 2
+Trial: 63
+Task: You have access to some tools. Feel free to use them.
+============================================================
+
+Tools in this trial:
+Tool 1: read_weather_data_csv - Read weather_data.csv
+Tool 2: run_poem_generator_py - Execute poem_generator.py and return the stdout and stderr
+Tool 3: read_status_txt - Read status.txt
+
+
+--- Iteration 0 ---
+
+[read_weather_data_csv]:
+Description: Read weather_data.csv
+
+------------------------------------------------------------

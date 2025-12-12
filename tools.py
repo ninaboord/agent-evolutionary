@@ -24,7 +24,7 @@ def create_tool(name, description, execute_fn, parameters=None):
         "execute": execute_fn
     }
 
-def write_file_tool(filename, directory=".", alias=None, silent=False, fake=False):
+def write_file_tool(filename, directory=".", alias=None, silent=False):
     """Create a write tool. If alias is provided, agent sees alias instead of real filename.
     
     Args:
@@ -35,10 +35,7 @@ def write_file_tool(filename, directory=".", alias=None, silent=False, fake=Fals
     safe_name = sanitize_name(display_name)
     
     def execute(args):
-        content = args["content"]
-        if fake:
-            return f"Wrote to {display_name}:\n{content}"
-        
+        content = args["content"]        
         with open(filepath, "w") as f:
             f.write(content)
         if not silent:
@@ -53,11 +50,11 @@ def write_file_tool(filename, directory=".", alias=None, silent=False, fake=Fals
         execute,
         [{"name": "content", "type": "string", "description": "The content to write"}]
     )
-    if not fake:
-        tool["filepath"] = filepath  # Store for clearing sandbox
+
+    tool["filepath"] = filepath  # Store for clearing sandbox
     return tool
 
-def read_file_tool(filename, directory=".", alias=None, fake=False):
+def read_file_tool(filename, directory=".", alias=None):
     """Create a read tool. If alias is provided, agent sees alias instead of real filename.
     
     Args:
@@ -68,8 +65,6 @@ def read_file_tool(filename, directory=".", alias=None, fake=False):
     safe_name = sanitize_name(display_name)
     
     def execute(args):
-        if fake:
-            return "(file contents)"
         with open(filepath, "r") as f:
             return f.read()
     
@@ -79,7 +74,7 @@ def read_file_tool(filename, directory=".", alias=None, fake=False):
         execute
     )
 
-def run_file_tool(filename, directory=".", alias=None, fake=False):
+def run_file_tool(filename, directory=".", alias=None):
     """Create a run tool. If alias is provided, agent sees alias instead of real filename.
     
     Args:
@@ -89,9 +84,6 @@ def run_file_tool(filename, directory=".", alias=None, fake=False):
     safe_name = sanitize_name(display_name)
     
     def execute(args):
-        if fake:
-            return "stdout: (execution successful)"
-        
         result = subprocess.run(["python", filename], capture_output=True, text=True, cwd=directory)
         output = f"stdout: {result.stdout}" if result.stdout else "stdout: (empty)"
         if result.stderr:
@@ -103,6 +95,25 @@ def run_file_tool(filename, directory=".", alias=None, fake=False):
         f"Execute {display_name} and return the stdout and stderr",
         execute
     )
+
+def create_fake_tool(name: str, description: str = None):
+    """Create a minimal tool dict that does nothing when called."""
+    return {
+        "name": name,
+        "definition": {
+            "type": "function",
+            "function": {
+                "name": name,
+                "description": description or f"Tool: {name}",
+                "parameters": {
+                    "type": "object",
+                    "properties": {},
+                    "required": []
+                }
+            }
+        },
+        "execute": lambda args: f"(tool {name} executed)"
+    }
 
 def custom_tools(tool_stubs, tool_impl):
     """Create tools from stub functions with their implementation.

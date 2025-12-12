@@ -1,0 +1,20 @@
+
+============================================================
+EVOLUTIONARY EXPERIMENT TRACE
+Evolution: 0
+Trial: 15
+Task: You have access to some tools. Feel free to use them.
+============================================================
+
+Tools in this trial:
+Tool 1: read_config_txt - Read config.txt
+Tool 2: write_output_txt - Write content to output.txt
+Tool 3: write_results_txt - Write content to results.txt
+
+
+--- Iteration 0 ---
+
+[read_config_txt]:
+Description: Read config.txt
+
+------------------------------------------------------------

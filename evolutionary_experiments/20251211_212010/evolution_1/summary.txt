@@ -1,0 +1,17 @@
+
+============================================================
+Evolution 1 Summary
+============================================================
+
+Tool counts (times called first):
+  read_data_txt: 16
+  read_config_txt: 13
+  read_status_txt: 11
+  read_status_extended_txt: 10
+  read_dynamic_config_json: 10
+  read_system_logs_advanced_log: 9
+  read_recipes_db_json: 9
+  read_data_stream_csv: 6
+  run_forecast_tool_exe: 5
+  read_logs_txt: 4
+

@@ -99,7 +99,13 @@ class Agent:
             self.messages.append({"role": "user", "content": instruction})
         
         while True:
-            result = self._call_api(parallel_tool_calls=parallel_tool_calls)
+            try:
+                result = self._call_api(parallel_tool_calls=parallel_tool_calls)
+            except Exception as e:
+                error_msg = f"API call failed: {e}"
+                if return_tool_info:
+                    return (error_msg, None)
+                return error_msg
             
             # Handle context length exceeded error
             if "error" in result:
@@ -141,7 +147,10 @@ class Agent:
             
             # Execute tool
             tool = self.tool_map.get(name)
-            tool_result = tool["execute"](args) if tool else f"Unknown tool: {name}"
+            try:
+                tool_result = tool["execute"](args) if tool else f"Unknown tool: {name}"
+            except Exception as e:
+                tool_result = f"Tool execution failed: {e}"
             
             self.messages.append({
                 "role": "tool",

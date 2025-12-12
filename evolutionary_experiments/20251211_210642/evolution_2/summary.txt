@@ -1,0 +1,13 @@
+
+============================================================
+Evolution 2 Summary
+============================================================
+
+Tool counts (times called first):
+  read_data_txt: 28
+  read_logs_txt: 22
+  read_status_txt: 21
+  read_config_txt: 18
+  read_weather_data_csv: 13
+  run_poem_generator_py: 3
+

@@ -13,7 +13,7 @@ def call_openrouter(model: str, messages: list, tools: list = None, response_for
         parallel_tool_calls: If False, restricts to one tool call at a time
     
     Returns:
-        API response dict
+        API response dict (or error dict on failure)
     """
     payload = {
         "model": model,
@@ -28,9 +28,15 @@ def call_openrouter(model: str, messages: list, tools: list = None, response_for
     if response_format:
         payload["response_format"] = response_format
     
-    response = requests.post(
-        url="https://openrouter.ai/api/v1/chat/completions",
-        headers={"Authorization": f"Bearer {os.getenv('OPENROUTER_API_KEY')}"},
-        data=json.dumps(payload)
-    )
-    return response.json()
+    try:
+        response = requests.post(
+            url="https://openrouter.ai/api/v1/chat/completions",
+            headers={"Authorization": f"Bearer {os.getenv('OPENROUTER_API_KEY')}"},
+            data=json.dumps(payload),
+            timeout=60  # 60 second timeout
+        )
+        return response.json()
+    except requests.exceptions.Timeout:
+        return {"error": "Request timeout after 60 seconds"}
+    except requests.exceptions.RequestException as e:
+        return {"error": f"Request failed: {e}"}

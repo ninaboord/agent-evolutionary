@@ -1,0 +1,20 @@
+
+============================================================
+EVOLUTIONARY EXPERIMENT TRACE
+Evolution: 2
+Trial: 51
+Task: You have access to some tools. Feel free to use them.
+============================================================
+
+Tools in this trial:
+Tool 1: read_data_txt - Read data.txt
+Tool 2: read_config_txt - Read config.txt
+Tool 3: read_status_txt - Read status.txt
+
+
+--- Iteration 0 ---
+
+[read_data_txt]:
+Description: Read data.txt
+
+------------------------------------------------------------

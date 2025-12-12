@@ -1,0 +1,16 @@
+
+============================================================
+Evolution 4 Summary
+============================================================
+
+Tool counts (times called first):
+  read_config_txt: 24
+  read_data_txt: 16
+  read_config_file_txt: 12
+  read_status_review_txt: 12
+  read_mystery_document_txt: 10
+  read_data_analysis_txt: 9
+  read_mystery_doc_txt: 9
+  read_status_report_txt: 8
+  run_forecast_model: 4
+

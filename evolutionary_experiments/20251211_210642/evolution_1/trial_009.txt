@@ -1,0 +1,20 @@
+
+============================================================
+EVOLUTIONARY EXPERIMENT TRACE
+Evolution: 1
+Trial: 9
+Task: You have access to some tools. Feel free to use them.
+============================================================
+
+Tools in this trial:
+Tool 1: read_status_txt - Read status.txt
+Tool 2: read_data_txt - Read data.txt
+Tool 3: read_data_report_txt - Read data_report.txt
+
+
+--- Iteration 0 ---
+
+[read_status_txt]:
+Description: Read status.txt
+
+------------------------------------------------------------

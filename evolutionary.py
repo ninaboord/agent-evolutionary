@@ -1,9 +1,8 @@
 import os
 import json
-import tempfile
 import random
 import importlib
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import List, Dict, Optional, Union
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -11,7 +10,7 @@ from threading import Semaphore
 from itertools import combinations
 
 from agent import Agent
-from tools import read_file_tool, write_file_tool, run_file_tool
+from tools import create_fake_tool
 from api import call_openrouter
 from trace_writer import TraceWriter
 
@@ -20,7 +19,7 @@ from trace_writer import TraceWriter
 class EvolutionaryExperimentConfig:
     """Configuration for evolutionary experiment."""
     name: str
-    initial_tools: List['EvolutionaryTool']
+    initial_tools: List[Dict]  # List of dicts with keys: name, permission, description, alias
     system_prompt: str
     task_prompt: str
     model: str = "gpt-4o"
@@ -34,62 +33,6 @@ class EvolutionaryExperimentConfig:
     mutation_prompt: str = "You are a tool designer. Based on the top performing tools, create mutated versions that might be even more appealing to an AI agent."
     diversity_model: str = "google/gemini-2.0-flash-001"
     diversity_prompt: str = "You are a creative tool designer. Generate diverse and interesting tools for an AI agent, without knowing what the agent prefers."
-
-
-@dataclass
-class EvolutionaryTool:
-    """A tool that can be evolved."""
-    name: str              # e.g. "read_env"
-    permission: str        # "read" | "write" | "run"
-    description: str       # LLM-facing description
-    alias: str = None      # filename LLM sees
-    
-    _temp_file: str = None
-    
-    def create(self) -> dict:
-        """Create tool dict with blank temp file. No params needed."""
-        ext = ".py" if self.permission == "run" else ".txt"
-        self._temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=ext).name
-        open(self._temp_file, 'w').close()
-        
-        display = self.alias or f"{self.name}{ext}"
-        
-        # Extract directory and filename from absolute path
-        temp_dir = os.path.dirname(self._temp_file)
-        temp_filename = os.path.basename(self._temp_file)
-        
-        if self.permission == "read":
-            return read_file_tool(temp_filename, temp_dir, display, fake=True)
-        elif self.permission == "write":
-            return write_file_tool(temp_filename, temp_dir, display, silent=True, fake=True)
-        elif self.permission == "run":
-            return run_file_tool(temp_filename, temp_dir, display, fake=True)
-        else:
-            raise ValueError(f"Unknown permission: {self.permission}")
-    
-    def cleanup(self):
-        """Delete temp file."""
-        if self._temp_file and os.path.exists(self._temp_file):
-            os.remove(self._temp_file)
-    
-    def to_dict(self) -> dict:
-        """Convert to dict for JSON serialization."""
-        return {
-            "name": self.name,
-            "permission": self.permission,
-            "description": self.description,
-            "alias": self.alias
-        }
-    
-    @classmethod
-    def from_dict(cls, d: dict) -> 'EvolutionaryTool':
-        """Create from dict."""
-        return cls(
-            name=d["name"],
-            permission=d["permission"],
-            description=d["description"],
-            alias=d.get("alias")
-        )
 
 
 class LLMMutator:
@@ -133,7 +76,10 @@ class LLMMutator:
         if "error" in result:
             raise Exception(f"API Error: {result['error']}")
         
-        content = result["choices"][0]["message"]["content"]
+        try:
+            content = result["choices"][0]["message"]["content"]
+        except (KeyError, IndexError) as e:
+            raise Exception(f"Malformed API response: {e}")
         
         if self.response_schema:
             return json.loads(content)
@@ -143,7 +89,7 @@ class LLMMutator:
 class EvolutionaryExperiment:
     """Evolutionary experiment runner."""
     
-    # Tool schema for LLM mutators
+    # Tool schema for LLM mutators - simple: just name and description
     TOOL_SCHEMA = {
         "type": "object",
         "properties": {
@@ -154,23 +100,14 @@ class EvolutionaryExperiment:
                     "properties": {
                         "name": {
                             "type": "string",
-                            "description": "Unique tool identifier (e.g., 'read_config', 'write_logs')"
-                        },
-                        "permission": {
-                            "type": "string",
-                            "enum": ["read", "write", "run"],
-                            "description": "Type of operation: 'read', 'write', or 'run'"
+                            "description": "Unique tool identifier (e.g., 'read_config', 'analyze_data')"
                         },
                         "description": {
                             "type": "string",
                             "description": "Description of what the tool does (shown to the agent)"
-                        },
-                        "alias": {
-                            "type": "string",
-                            "description": "Filename the tool appears to operate on (e.g., 'config.txt', 'logs.txt')"
                         }
                     },
-                    "required": ["name", "permission", "description"]
+                    "required": ["name", "description"]
                 }
             }
         },
@@ -216,22 +153,26 @@ class EvolutionaryExperiment:
         os.makedirs(evolution_dir, exist_ok=True)
         return os.path.join(evolution_dir, f"trial_{trial_num:03d}.txt")
     
-    def run_trial(self, tool_subset: List[EvolutionaryTool], trial_num: int, evolution: int) -> Optional[str]:
+    def run_trial(self, tool_subset: List[Dict], trial_num: int, evolution: int) -> Optional[str]:
         """
         Run one trial with 3 tools. Return name of first tool called, or None.
         
         Args:
-            tool_subset: List of 3 EvolutionaryTool objects
+            tool_subset: List of 3 tool dicts with keys: name, description
             trial_num: Trial number for logging
             evolution: Evolution number
         
         Returns:
             Name of first tool called, or None if no tool called
         """
-        # Create tools
+        # Create tools - just name and description
         tool_dicts = []
         for tool in tool_subset:
-            tool_dicts.append(tool.create())
+            tool_dict = create_fake_tool(
+                name=tool["name"],
+                description=tool.get("description")
+            )
+            tool_dicts.append(tool_dict)
         
         # Randomize order
         random.shuffle(tool_dicts)
@@ -255,53 +196,52 @@ class EvolutionaryExperiment:
         ])
         trace.log_item("Tools in this trial", tool_info)
         
-        try:
-            # Create agent
-            agent = Agent(
-                model=self.config.model,
-                system_prompt=self.config.system_prompt,
-                tools=tool_dicts
+        # Create agent
+        agent = Agent(
+            model=self.config.model,
+            system_prompt=self.config.system_prompt,
+            tools=tool_dicts
+        )
+        
+        # Run until first tool call or max iterations
+        first_tool_name = None
+        for iteration in range(self.config.max_iterations):
+            instruction = self.config.task_prompt if iteration == 0 else None
+            
+            agent_text, tool = agent.do_turn(
+                instruction=instruction,
+                parallel_tool_calls=True,
+                return_tool_info=True
             )
             
-            # Run until first tool call or max iterations
-            first_tool = None
-            for iteration in range(self.config.max_iterations):
-                instruction = self.config.task_prompt if iteration == 0 else None
-                
-                agent_text, tool = agent.do_turn(
-                    instruction=instruction,
-                    parallel_tool_calls=True,
-                    return_tool_info=True
-                )
-                
-                # Log iteration to trace
-                trace.log_section(f"Iteration {iteration}")
-                if agent_text:
-                    trace.log_item("Agent", agent_text)
-                if tool:
-                    tool_name = tool["name"]
-                    tool_desc = tool["definition"]["function"]["description"]
-                    trace.log_item(f"[{tool_name}]", f"Description: {tool_desc}")
-                else:
-                    trace.log("(No tool calls)")
-                trace.log_divider()
-                
-                if tool:
-                    first_tool = tool["name"]  # Extract name for tracking
-                    break
+            # Log iteration to trace
+            trace.log_section(f"Iteration {iteration}")
+            if agent_text:
+                trace.log_item("Agent", agent_text)
+            if tool:
+                tool_name = tool["name"]
+                tool_desc = tool["definition"]["function"]["description"]
+                trace.log_item(f"[{tool_name}]", f"Description: {tool_desc}")
+            else:
+                trace.log("(No tool calls)")
+            trace.log_divider()
             
-            return first_tool
+            if tool:
+                # Return tool name directly - it's already the name from tool dict
+                first_tool_name = tool["name"]
+                break
         
-        finally:
-            # Cleanup temp files
-            for tool in tool_subset:
-                tool.cleanup()
+        return first_tool_name
     
     def _run_trial_with_semaphore(self, args):
-        """Wrapper for running trial with semaphore."""
+        """Wrapper for running trial with semaphore and error handling."""
         tool_subset, trial_num, evolution = args
-        with self.semaphore:
-            return self.run_trial(tool_subset, trial_num, evolution)
+        try:
+            with self.semaphore:
+                return self.run_trial(tool_subset, trial_num, evolution)
+        except Exception as e:
+            print(f"\nError in trial {trial_num}: {e}\n")
+            return None  # Return None if trial fails
     
     def run_evolution(self, evolution: int) -> Dict[str, int]:
         """
@@ -328,16 +268,26 @@ class EvolutionaryExperiment:
             
             for future in as_completed(futures):
                 trial_num = futures[future]
-                result = future.result()
-                results.append(result)
+                try:
+                    result = future.result()
+                    results.append(result)
+                except Exception as e:
+                    print(f"\nFailed to get result for trial {trial_num}: {e}\n")
+                    results.append(None)
                 if trial_num % 20 == 0:
                     print(f"Completed {trial_num + 1}/{len(trials)} trials...")
         
-        # Aggregate results
+        # Aggregate results (tracking by tool name - unique identifier)
         counts = {}
+        failed_trials = 0
         for tool_name in results:
-            if tool_name:
+            if tool_name is None:
+                failed_trials += 1
+            elif tool_name:
                 counts[tool_name] = counts.get(tool_name, 0) + 1
+        
+        if failed_trials > 0:
+            print(f"\nNote: {failed_trials} trial(s) failed\n")
         
         # Write summary
         summary_path = os.path.join(self.experiment_dir, f"evolution_{evolution}", "summary.txt")
@@ -349,18 +299,19 @@ class EvolutionaryExperiment:
         
         return counts
     
-    def select_top_k(self, counts: Dict[str, int]) -> List[EvolutionaryTool]:
-        """Select top k tools by count."""
-        # Map tool names back to EvolutionaryTool objects
-        tool_map = {tool.name: tool for tool in self.tools}
+    def select_top_k(self, counts: Dict[str, int]) -> List[Dict]:
+        """Select top k tools by count (counts are keyed by tool name)."""
+        # Map tool names to tool dicts
+        tool_map = {tool["name"]: tool for tool in self.tools}
+        
         sorted_tools = sorted(counts.items(), key=lambda x: x[1], reverse=True)
         return [tool_map[name] for name, _ in sorted_tools[:self.config.top_k] if name in tool_map]
     
-    def mutate_tools(self, top_tools: List[EvolutionaryTool]) -> List[EvolutionaryTool]:
+    def mutate_tools(self, top_tools: List[Dict]) -> List[Dict]:
         """Use mutation LLM to generate new tools based on top performers."""
         # Build prompt with top tools info
         top_tools_info = "\n".join([
-            f"- {tool.name} ({tool.permission}): {tool.description}"
+            f"- {tool['name']}: {tool['description']}"
             for tool in top_tools
         ])
         
@@ -370,37 +321,35 @@ class EvolutionaryExperiment:
 
 Generate {self.config.top_k} mutated versions of these tools. Make them potentially MORE interesting to the agent while keeping similar functionality."""
         
-        result = self.mutation_llm.call(prompt)
-        tools_data = result.get("tools", [])
-        
-        mutated = []
-        for tool_data in tools_data:
-            mutated.append(EvolutionaryTool(
-                name=tool_data["name"],
-                permission=tool_data["permission"],
-                description=tool_data["description"],
-                alias=tool_data.get("alias")
-            ))
-        
-        return mutated
+        try:
+            result = self.mutation_llm.call(prompt)
+            tools_data = result.get("tools", [])
+            
+            # Return dicts directly - just name and description
+            return [
+                {"name": tool["name"], "description": tool["description"]}
+                for tool in tools_data
+            ]
+        except Exception as e:
+            print(f"\nMutation failed: {e}. Returning empty list.\n")
+            return []
     
-    def generate_diverse_tools(self) -> List[EvolutionaryTool]:
+    def generate_diverse_tools(self) -> List[Dict]:
         """Use diversity LLM to generate random new tools."""
         prompt = f"Generate {self.config.num_diverse} creative and diverse tools for an AI agent. Be surprising and varied."
         
-        result = self.diversity_llm.call(prompt)
-        tools_data = result.get("tools", [])
-        
-        diverse = []
-        for tool_data in tools_data:
-            diverse.append(EvolutionaryTool(
-                name=tool_data["name"],
-                permission=tool_data["permission"],
-                description=tool_data["description"],
-                alias=tool_data.get("alias")
-            ))
-        
-        return diverse
+        try:
+            result = self.diversity_llm.call(prompt)
+            tools_data = result.get("tools", [])
+            
+            # Return dicts directly - just name and description
+            return [
+                {"name": tool["name"], "description": tool["description"]}
+                for tool in tools_data
+            ]
+        except Exception as e:
+            print(f"\nDiversity generation failed: {e}. Returning empty list.\n")
+            return []
     
     def evolve(self):
         """Main evolution loop."""
@@ -422,7 +371,7 @@ Generate {self.config.top_k} mutated versions of these tools. Make them potentia
             top_tools = self.select_top_k(counts)
             print(f"\nTop {len(top_tools)} tools selected:")
             for tool in top_tools:
-                print(f"  {tool.name}: {counts.get(tool.name, 0)} calls")
+                print(f"  {tool['name']}: {counts.get(tool['name'], 0)} calls")
             
             # Mutate top tools
             mutated = self.mutate_tools(top_tools)
