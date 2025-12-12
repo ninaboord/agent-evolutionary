@@ -1,9 +1,0 @@
-
-============================================================
-Evolution 1 Summary
-============================================================
-
-Tool counts (times called first):
-  write_unique_output: 1
-  write_output: 1
-

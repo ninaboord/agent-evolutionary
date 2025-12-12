@@ -1,9 +1,0 @@
-
-============================================================
-Evolution 1 Summary
-============================================================
-
-Tool counts (times called first):
-  run_test: 1
-  execute_experiment: 1
-

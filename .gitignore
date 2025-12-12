@@ -25,8 +25,11 @@ yarn-error.log*
 .DS_Store
 Thumbs.db
 
-# Experiment runs (optional - uncomment if you don't want to track run logs)
-# experiments/*/runs/
+# Experiment runs
+experiments/*/runs/
+
+# Evolutionary experiment runs (timestamped directories)
+evolutionary_experiments/[0-9]*/
 
 # Sandbox files (optional - uncomment if you don't want to track sandbox files)
 # experiments/*/sandbox.py
